@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/profile-hero.svg" alt="pretextQ — Framework, Knowledge, Verification" width="100%" />
+  <img src="./assets/profile-hero.svg" alt="pretextQ — Agents you can actually ship" width="100%" />
 </p>
 
 <p align="center">
@@ -211,7 +211,7 @@ The value of automated testing is not how much it runs — it is whether failure
 
 ---
 
-<h3 align="center">Build the agent. Ground it in facts. Prove it works.</h3>
+<h3 align="center">Agents you can actually ship.</h3>
 
 <p align="center">
   If you are also working on enterprise agents, RAG quality or test engineering — let's talk.

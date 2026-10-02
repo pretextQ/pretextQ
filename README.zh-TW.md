@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/profile-hero.svg" alt="pretextQ — Framework, Knowledge, Verification" width="100%" />
+  <img src="./assets/profile-hero.svg" alt="pretextQ — Agents you can actually ship" width="100%" />
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 
 ---
 
-## 我建構的，不是三個互不相關的儲存庫
+## 三個儲存庫，一條完整的工程鏈路
 
 我習慣把「能不能落進企業生產環境」當作系統的第一指標：模型只是其中的判斷元件，真正決定成敗的，是權限邊界、資料歸屬、檢索品質、驗證手段和可觀測性。
 
@@ -88,7 +88,7 @@ CRM · ITSM · 監控 · HR · 財務 · OA
 - **可觀測與可稽核**：每次 Provider 呼叫的參數、耗時、狀態碼落庫成 Trace，附稽核報表、失敗率與耗時分析。
 - **為測試而設計**：核心不綁定具體模型，CI 中以固定 Stub Provider 跑端到端迴歸。
 
-### 我在這個專案中關注的問題
+### 這個專案真正要解決的問題
 
 Agent 在企業裡最常見的失敗不是「不夠聰明」，而是權限失控、整合散落、行為無法追溯。atlas-claw 把這三件事放在設計起點：讓模型的每一次行動都在既有權限體系內、有 Trace 可查、可被報表統計。
 
@@ -131,7 +131,7 @@ BM25 稀疏召回  +  ChromaDB 稠密召回
 - **分層快取**：QA 精確匹配 → 向量語義快取 → 正常檢索，命中即省一次完整管道開銷。
 - **效果可度量**：內建 RAGAS 評估模組，檢索與生成品質有數字可看，而不是憑感覺調 Prompt。
 
-### 我在這個專案中關注的問題
+### 這個專案真正要解決的問題
 
 RAG 系統最難的不是把向量存進去，而是回答是否忠於文件：每句話能不能點回原文引用、檢索失敗時系統如何自證、效果變化如何被測量。GraphScholarV1 把引用查核與 RAGAS 評估當作一級公民。
 
@@ -173,7 +173,7 @@ Docker 化執行 · GitHub Actions CI
 - **多環境切換**：conftest 管理環境組態，一套用例跑遍開發、測試、預發。
 - **結果工程閉環**：Allure 報告、飛書機器人通知、Docker 化執行、GitHub Actions CI 全部就位。
 
-### 我在這個專案中關注的問題
+### 這個專案真正要解決的問題
 
 自動化測試的價值不在跑得多，而在失敗時能否直接定位、成功時能否信任。回應與資料庫的雙重校驗、清晰的分層結構，讓每一次斷言都可解釋、可維護。
 
@@ -183,7 +183,7 @@ Docker 化執行 · GitHub Actions CI
 
 ---
 
-## 三個專案背後的統一方法
+## 貫穿三個專案的工程原則
 
 | 原則 | 我的工程取向 |
 |---|---|
@@ -193,7 +193,7 @@ Docker 化執行 · GitHub Actions CI
 | **可觀測與可稽核** | Trace、稽核報表、Allure 報告先於功能堆疊，行為可重放、可統計。 |
 | **一切進 CI** | Stub 迴歸、RAGAS 評估、容器化執行都進 GitHub Actions，文件與程式碼同步演進。 |
 
-## 技術版圖
+## 技術分層
 
 | Layer | Technologies | What I build |
 |---|---|---|
@@ -202,7 +202,7 @@ Docker 化執行 · GitHub Actions CI
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, RAGAS | 介面迴歸、雙重校驗、檢索效果評估 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飛書 | CI、環境編排、報告與結果通知 |
 
-## 現在仍在推進
+## 最近在做的事
 
 - 打磨 atlas-claw 的內嵌 / 獨立雙模式，擴充內部系統的 Provider 與稽核報表
 - 以 RAGAS 評估驅動 GraphScholarV1 的檢索品質最佳化與多模態解析擴充
@@ -211,7 +211,7 @@ Docker 化執行 · GitHub Actions CI
 
 ---
 
-<h3 align="center">Build the agent. Ground it in facts. Prove it works.</h3>
+<h3 align="center">Agents you can actually ship.</h3>
 
 <p align="center">
   如果你也在做企業 Agent 落地、RAG 檢索品質或測試工程化，歡迎交流。
