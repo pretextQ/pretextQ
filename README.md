@@ -1,12 +1,18 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=soft&height=180&color=0:1e3a5f,100:0d1117&section=header&text=pretextQ&fontSize=60&fontColor=ffffff&desc=AI%20Agent%20%C2%B7%20RAG%20%C2%B7%20Automation%20Engineering&descSize=18" alt="pretextQ banner" />
+<img src="./assets/banner.svg" alt="pretextQ — Build the agent. Ground it in facts. Prove it works." width="100%" />
+
+[简体中文](README.md) · [English](README.en.md)
 
 # 你好，我是 pretextQ 👋
+
+---
 
 **我构建的不是“会跑的 Demo”，而是权限可控、结果可验证、能落进企业生产环境的系统。**
 
 AI Agent 框架 · RAG 知识库 · 接口自动化测试 · DevOps 工程化
+
+[GitHub](https://github.com/pretextQ) · <!-- CSDN 和 Email 链接补好后取消注释: [CSDN](你的CSDN主页) · [Email](mailto:你的邮箱) -->
 
 </div>
 
