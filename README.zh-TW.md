@@ -15,7 +15,7 @@
 <h3 align="center">我建構的不是「會跑的 Demo」，而是權限可控、結果可驗證、能落進企業生產環境的系統。</h3>
 
 <p align="center">
-  AI Agent Framework · Enterprise RBAC · RAG · 檢索評估 · 介面自動化測試 · DevOps 工程化
+  AI Agent Framework · Enterprise RBAC · Coding Agent 原理與實作 · 介面自動化測試 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 
 ## 三個儲存庫，一條完整的工程鏈路
 
-我習慣把「能不能落進企業生產環境」當作系統的第一指標：模型只是其中的判斷元件，真正決定成敗的，是權限邊界、資料歸屬、檢索品質、驗證手段和可觀測性。
+我習慣把「能不能落進企業生產環境」當作系統的第一指標：模型只是其中的判斷元件，真正決定成敗的，是權限邊界、工具與上下文治理、驗證手段和可觀測性。
 
 這三個專案恰好覆蓋了我最關心的完整工程鏈路：
 
@@ -37,8 +37,8 @@
       Agent 如何以登入使用者的身分、在企業權限體系內呼叫內部系統：統一入口、權限繼承、可插拔整合、Trace 與稽核。
     </td>
     <td width="33%" valign="top">
-      <strong>🧠 Knowledge / RAG</strong><br/><br/>
-      文件如何變成可查核的知識：多模態解析、混合檢索、引用查核，以及可以量化的效果評估。
+      <strong>🧩 Coding Agent</strong><br/><br/>
+      AI Coding Agent 的核心原理如何落地為工程實作：Agent 主迴圈、工具呼叫、權限分層、MCP 擴充與上下文管理。
     </td>
     <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
@@ -49,7 +49,7 @@
 
 ```text
 atlas-claw              →  企業 Agent 的統一入口、權限繼承與可插拔整合
-GraphScholarV1          →  把文件變成可查核的知識：混合檢索與引用閉環
+MewCode                 →  完整實作 AI Coding Agent：主迴圈、工具與權限
 api-auto-test-framework →  用資料驅動與雙重校驗證明每一次介面行為
 ```
 
@@ -98,46 +98,51 @@ Agent 在企業裡最常見的失敗不是「不夠聰明」，而是權限失�
 
 ---
 
-## 02 / GraphScholarV1
+## 02 / MewCode
 
-### [A multimodal RAG knowledge base with verifiable answers](https://github.com/pretextQ/GraphScholarV1)
+### [A complete AI Coding Agent implementation, from first principles](https://github.com/pretextQ/MewCode)
 
-> 把文件沉澱為可檢索、可引用的知識，讓每一次回答都能回到來源。
+> 把 AI Coding Agent 的完整實作攤開來看：Agent 主迴圈、工具呼叫、權限分層、MCP 擴充——可讀、可跑、可改。
 
-| 專案形態 | 核心定位 | 評估體系 | Links |
+| 專案形態 | 核心定位 | 介面形態 | Links |
 |---|---|---|---|
-| Full-stack RAG 應用 | 多模態知識庫問答 | 內建 RAGAS 評估 | [Repository](https://github.com/pretextQ/GraphScholarV1) |
+| AI Coding Agent 完整實作 | Agent 原理 · 工具系統 · 權限分層 | Textual 終端 TUI | [Repository](https://github.com/pretextQ/MewCode) |
 
-GraphScholarV1 是面向個人知識管理場景的多模態 RAG 知識庫問答系統：上傳文件 → 智慧解析 → 混合索引 → 精準問答。前後端分離，FastAPI + SQLAlchemy 承載服務層，React 18 + Vite + Tailwind 建構工作台。
+MewCode 是一個 AI Coding Agent 的完整實作，目標是把 AI Agent 的核心原理與工程實務講清楚：不只是「會呼叫模型的迴圈」，而是把工具系統、權限模型、上下文與記憶管理、MCP 擴充一一實作到位。介面以 Textual 建構，Windows 是一等公民執行平台。
 
-### 一條把答案釘在來源上的檢索管道
+### 一個 Coding Agent 的完整骨架
 
 ```text
-上傳文件（PDF / Markdown / 掃描件 / 圖片）
+使用者輸入（Textual TUI）
       ↓
-解析 · 切分 · OCR / VLM 圖片描述
+Agent 主迴圈（asyncio 驅動）
       ↓
-BM25 稀疏召回  +  ChromaDB 稠密召回
+LLM 用戶端（anthropic / openai / openai-compat 三種協定）
       ↓
-查詢改寫 → 問題路由 → Rerank 精排 → 引用查核
+工具呼叫 ── 內建工具 · Skills · MCP（stdio / Streamable HTTP）
       ↓
-回答 + 引用來源（低信心度自動二次檢索）
+權限分層 ── 敏感操作彈窗確認，不靜默執行
+      ↓
+上下文與記憶管理 · Hooks · 檔案歷史
+      ↓
+多 Agent 協作（teams / worktree）
 ```
 
-- **多模態文件解析**：PDF / Markdown / 純文字，掃描版走 OCR，圖片交給 VLM 生成描述並參與檢索。
-- **混合檢索**：BM25 稀疏召回 + 向量稠密召回雙路並行，兼顧關鍵字命中與語義相似。
-- **完整檢索管道**：查詢改寫、問題路由、Rerank 精排、引用查核，低信心度自動觸發二次檢索。
-- **增量索引**：檔案 Hash 指紋識別改動，自動重建索引，服務不重啟、知識不中斷。
-- **分層快取**：QA 精確匹配 → 向量語義快取 → 正常檢索，命中即省一次完整管道開銷。
-- **效果可度量**：內建 RAGAS 評估模組，檢索與生成品質有數字可看，而不是憑感覺調 Prompt。
+- **完整 Agent 主迴圈**：asyncio 驅動的對話迴圈，內建 Plan / AskUser / Permission 對話框，Agent 每一步行為可見、可控。
+- **多協定模型接入**：anthropic / openai / openai-compat 三種協定即配即用，支援 extended thinking，API Key 走環境變數回退。
+- **可擴充的工具系統**：內建檔案與指令工具，Skills 與 Memory 沉澱能力，MCP 以 stdio / Streamable HTTP 雙傳輸接入外部工具。
+- **權限分層語義**：敏感操作彈出確認對話框而不是靜默執行，權限語義寫成文件，危險動作有明確邊界。
+- **Hooks 契約**：stdin JSON 契約清晰，生命週期鉤子可觀測、可攔截，擴充點行為可預期。
+- **多 Agent 協作**：teams 與 worktree 做任務隔離，teammate 樹狀管理，檔案歷史可回溯。
+- **Windows 一等公民**：GBK 編碼讀取、行尾保持、行程樹清理等平台邊界有專門文件與處理。
 
 ### 這個專案真正要解決的問題
 
-RAG 系統最難的不是把向量存進去，而是回答是否忠於文件：每句話能不能點回原文引用、檢索失敗時系統如何自證、效果變化如何被測量。GraphScholarV1 把引用查核與 RAGAS 評估當作一級公民。
+AI Coding Agent 的內部實作大多封裝在商業產品裡：會用的人多，能說清主迴圈怎麼轉、工具怎麼編排、權限怎麼攔截的人少。MewCode 把這層黑盒打開——每一步都是可讀、可跑、可改的工程程式碼，而不是概念圖。
 
 **Core Stack**
 
-`Python 3.14` `FastAPI` `React 18` `PostgreSQL` `ChromaDB` `BM25` `Reranker` `RAGAS` `LangChain`
+`Python 3.11` `Textual` `asyncio` `MCP` `uv` `pytest` `ruff` `mypy` `GitHub Actions`
 
 ---
 
@@ -188,33 +193,33 @@ Docker 化執行 · GitHub Actions CI
 | 原則 | 我的工程取向 |
 |---|---|
 | **權限先行** | Agent 以登入使用者身分行動，RBAC 決定能看見什麼、呼叫什麼，未授權的整合不進平台層。 |
-| **Evidence before answers** | 回答要有引用、斷言要有資料、發現要有證據，不輸出無法回溯的結論。 |
-| **薄核心，可替換** | 框架、檢索、測試都以薄核心組織，具體實作做成可插拔元件。 |
+| **Evidence before answers** | 回答要有依據、斷言要有資料、發現要有證據，不輸出無法回溯的結論。 |
+| **薄核心，可替換** | 框架、Agent 內核、測試都以薄核心組織，具體實作做成可插拔元件。 |
 | **可觀測與可稽核** | Trace、稽核報表、Allure 報告先於功能堆疊，行為可重放、可統計。 |
-| **一切進 CI** | Stub 迴歸、RAGAS 評估、容器化執行都進 GitHub Actions，文件與程式碼同步演進。 |
+| **一切進 CI** | Stub 迴歸、pytest + ruff + mypy 檢查、容器化執行都進 GitHub Actions，文件與程式碼同步演進。 |
 
 ## 技術分層
 
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent & Backend** | Python, FastAPI, SQLAlchemy, JWT / RBAC | 服務層、領域模型、權限繼承與對話管理 |
-| **RAG & Data** | BM25, ChromaDB, Reranker, PostgreSQL, MySQL | 混合檢索、引用查核、快取與索引治理 |
-| **Testing & Quality** | Pytest, YAML, JSONPath, SQL, RAGAS | 介面迴歸、雙重校驗、檢索效果評估 |
+| **Agent Internals** | Textual, asyncio, MCP, Hooks, uv | Agent 主迴圈、工具系統、權限分層與上下文管理 |
+| **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | 介面迴歸、雙重校驗、靜態型別與風格檢查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飛書 | CI、環境編排、報告與結果通知 |
 
 ## 最近在做的事
 
 - 打磨 atlas-claw 的內嵌 / 獨立雙模式，擴充內部系統的 Provider 與稽核報表
-- 以 RAGAS 評估驅動 GraphScholarV1 的檢索品質最佳化與多模態解析擴充
+- 迭代 MewCode 的多 Agent 協作與 Skills 生態，補齊 Hooks 與 MCP 的邊界場景
 - 沉澱 api-auto-test-framework 的校驗器與用例庫
-- Lyra4DAgent · AgentKit · MewCode 等實驗儲存庫的持續迭代
+- Lyra4DAgent · AgentKit 等實驗儲存庫的持續迭代
 
 ---
 
 <h3 align="center">Agents you can actually ship.</h3>
 
 <p align="center">
-  如果你也在做企業 Agent 落地、RAG 檢索品質或測試工程化，歡迎交流。
+  如果你也在做企業 Agent 落地、Coding Agent 原理實作或測試工程化，歡迎交流。
 </p>
 
 <p align="center">

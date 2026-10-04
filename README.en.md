@@ -15,7 +15,7 @@
 <h3 align="center">I don't build chat demos — I build permission-controlled, verifiable systems that ship to enterprise production.</h3>
 
 <p align="center">
-  AI Agent Framework · Enterprise RBAC · RAG · Retrieval Evaluation · API Test Automation · DevOps Engineering
+  AI Agent Framework · Enterprise RBAC · Coding Agent Internals · API Test Automation · DevOps Engineering
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 
 ## Three repos, one engineering chain
 
-I treat "can it ship to enterprise production" as the first metric of any system: the model is just the reasoning component — what actually decides success is the permission boundary, data ownership, retrieval quality, verification tooling and observability.
+I treat "can it ship to enterprise production" as the first metric of any system: the model is just the reasoning component — what actually decides success is the permission boundary, tool and context governance, verification tooling and observability.
 
 These three projects cover the full engineering chain I care about:
 
@@ -37,8 +37,8 @@ These three projects cover the full engineering chain I care about:
       How an agent calls internal systems as the logged-in user, inside the enterprise permission model: unified entry point, RBAC inheritance, pluggable integrations, traces and audit.
     </td>
     <td width="33%" valign="top">
-      <strong>🧠 Knowledge / RAG</strong><br/><br/>
-      How documents become verifiable knowledge: multimodal parsing, hybrid retrieval, citation checking, and measurable quality evaluation.
+      <strong>🧩 Coding Agent</strong><br/><br/>
+      How the core of a coding agent becomes a working implementation: agent loop, tool calling, permission layering, MCP extensions and context management.
     </td>
     <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
@@ -49,7 +49,7 @@ These three projects cover the full engineering chain I care about:
 
 ```text
 atlas-claw              →  unified entry point, permission inheritance, pluggable integrations
-GraphScholarV1          →  documents into verifiable knowledge: hybrid retrieval and citations
+MewCode                 →  a complete coding agent implementation: loop, tools, permissions
 api-auto-test-framework →  prove every API behavior with data-driven dual validation
 ```
 
@@ -98,46 +98,51 @@ The most common enterprise agent failures are not "not smart enough" — they ar
 
 ---
 
-## 02 / GraphScholarV1
+## 02 / MewCode
 
-### [A multimodal RAG knowledge base with verifiable answers](https://github.com/pretextQ/GraphScholarV1)
+### [A complete AI Coding Agent implementation, from first principles](https://github.com/pretextQ/MewCode)
 
-> Turn documents into retrievable, citable knowledge — every answer should be able to point back to its source.
+> The full anatomy of an AI coding agent — agent loop, tool calling, permission layering, MCP extensions — readable, runnable, modifiable.
 
-| Form | Focus | Evaluation | Links |
+| Form | Focus | Interface | Links |
 |---|---|---|---|
-| Full-stack RAG application | Multimodal knowledge-base QA | Built-in RAGAS | [Repository](https://github.com/pretextQ/GraphScholarV1) |
+| Complete AI coding agent implementation | Agent loop · Tool system · Permission layering | Textual terminal TUI | [Repository](https://github.com/pretextQ/MewCode) |
 
-GraphScholarV1 is a multimodal RAG knowledge-base QA system for personal knowledge management: upload documents → intelligent parsing → hybrid indexing → precise QA. Separated frontend/backend: FastAPI + SQLAlchemy services, React 18 + Vite + Tailwind workbench.
+MewCode is a complete implementation of an AI coding agent, built to make the core principles and engineering practices concrete: not just "a loop that calls the model" — the tool system, permission model, context and memory management, and MCP extensions are all implemented end to end. The UI is built on Textual, and Windows is a first-class platform.
 
-### A retrieval pipeline that pins answers to their sources
+### The full skeleton of a coding agent
 
 ```text
-Upload (PDF / Markdown / scanned / images)
+User input (Textual TUI)
       ↓
-Parse · chunk · OCR / VLM image captions
+Agent loop (asyncio-driven)
       ↓
-BM25 sparse recall  +  ChromaDB dense recall
+LLM client (anthropic / openai / openai-compat protocols)
       ↓
-Query rewrite → routing → Rerank → citation check
+Tool calls ── built-in tools · skills · MCP (stdio / Streamable HTTP)
       ↓
-Answer + cited sources (auto second-pass on low confidence)
+Permission layering ── sensitive actions require confirmation, never silent
+      ↓
+Context & memory management · hooks · file history
+      ↓
+Multi-agent collaboration (teams / worktrees)
 ```
 
-- **Multimodal document parsing**: PDF / Markdown / plain text, OCR for scanned pages, VLM captions for images — all retrievable.
-- **Hybrid retrieval**: BM25 sparse recall + dense vector recall in parallel, covering both keyword hits and semantic similarity.
-- **Full retrieval pipeline**: query rewrite, question routing, Rerank refinement, citation checking — low confidence automatically triggers a second retrieval pass.
-- **Incremental indexing**: file hash fingerprints detect changes and re-index automatically, no service restart.
-- **Layered caching**: exact QA match → semantic vector cache → normal retrieval; a hit skips the whole pipeline.
-- **Measurable quality**: built-in RAGAS evaluation module — retrieval and generation quality come with numbers, not vibes.
+- **Complete agent loop**: an asyncio-driven conversation loop with built-in Plan / AskUser / Permission dialogs — every step of the agent stays visible and controllable.
+- **Multi-protocol model access**: anthropic / openai / openai-compat protocols work out of the box, with extended thinking support and API-key env-var fallback.
+- **Extensible tool system**: built-in file and command tools, capabilities distilled into skills and memory, and MCP over stdio / Streamable HTTP for external tools.
+- **Permission layering semantics**: sensitive actions raise a confirmation dialog instead of running silently; the permission semantics are documented with explicit boundaries.
+- **Hook contract**: a clear stdin JSON contract — lifecycle hooks are observable and interceptable, so extension points behave predictably.
+- **Multi-agent collaboration**: teams and worktrees isolate tasks, teammates are managed as a tree, and file history stays traceable.
+- **Windows as a first-class citizen**: platform edges — GBK encoding, line endings, process-tree cleanup — are documented and handled.
 
 ### The questions I care about in this project
 
-The hard part of RAG is not storing vectors — it is whether the answer stays faithful to the documents: can every sentence point back to a citation, how does the system prove itself when retrieval fails, and how are quality changes measured. GraphScholarV1 treats citation checking and RAGAS evaluation as first-class citizens.
+The internals of coding agents are locked inside commercial products: plenty of people use them, few can explain how the agent loop runs, how tool calls are orchestrated, or how permissions intercept actions. MewCode opens that black box — every step is readable, runnable, modifiable engineering code, not a concept diagram.
 
 **Core Stack**
 
-`Python 3.14` `FastAPI` `React 18` `PostgreSQL` `ChromaDB` `BM25` `Reranker` `RAGAS` `LangChain`
+`Python 3.11` `Textual` `asyncio` `MCP` `uv` `pytest` `ruff` `mypy` `GitHub Actions`
 
 ---
 
@@ -188,33 +193,33 @@ The value of automated testing is not how much it runs — it is whether failure
 | Principle | How I engineer |
 |---|---|
 | **Permissions first** | The agent acts as the logged-in user; RBAC decides what is visible and callable — unauthorized integrations never enter the platform layer. |
-| **Evidence before answers** | Answers need citations, assertions need data, findings need evidence — no conclusions that cannot be traced back. |
+| **Evidence before answers** | Answers need grounding, assertions need data, findings need evidence — no conclusions that cannot be traced back. |
 | **Thin core, replaceable parts** | Framework, retrieval and testing are all organized around a thin core; implementations are pluggable components. |
 | **Observable and auditable** | Traces, audit reports and Allure reports come before feature piling — behavior can be replayed and measured. |
-| **Everything into CI** | Stub regression, RAGAS evaluation and containerized runs all live in GitHub Actions; docs evolve with code. |
+| **Everything into CI** | Stub regression, pytest + ruff + mypy checks and containerized runs all live in GitHub Actions; docs evolve with code. |
 
 ## Tech landscape
 
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent & Backend** | Python, FastAPI, SQLAlchemy, JWT / RBAC | Service layer, domain models, permission inheritance, session management |
-| **RAG & Data** | BM25, ChromaDB, Reranker, PostgreSQL, MySQL | Hybrid retrieval, citation checking, caching and index governance |
-| **Testing & Quality** | Pytest, YAML, JSONPath, SQL, RAGAS | API regression, dual validation, retrieval quality evaluation |
+| **Agent Internals** | Textual, asyncio, MCP, Hooks, uv | Agent loop, tool system, permission layering, context management |
+| **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | API regression, dual validation, static typing and lint checks |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, Feishu | CI, environment orchestration, reporting and notifications |
 
 ## Currently in progress
 
 - Refining atlas-claw's embedded / standalone modes, expanding providers and audit reports
-- RAGAS-driven retrieval quality improvements and multimodal parsing for GraphScholarV1
+- Iterating on MewCode's multi-agent collaboration and skills ecosystem, hardening hooks and MCP edge cases
 - Growing the validator and case library of api-auto-test-framework
-- Ongoing experiments in Lyra4DAgent · AgentKit · MewCode
+- Ongoing experiments in Lyra4DAgent · AgentKit
 
 ---
 
 <h3 align="center">Agents you can actually ship.</h3>
 
 <p align="center">
-  If you are also working on enterprise agents, RAG quality or test engineering — let's talk.
+  If you are also working on enterprise agents, coding agent internals or test engineering — let's talk.
 </p>
 
 <p align="center">
