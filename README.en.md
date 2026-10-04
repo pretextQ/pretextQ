@@ -212,7 +212,6 @@ The value of automated testing is not how much it runs — it is whether failure
 - Refining atlas-claw's embedded / standalone modes, expanding providers and audit reports
 - Iterating on MewCode's multi-agent collaboration and skills ecosystem, hardening hooks and MCP edge cases
 - Growing the validator and case library of api-auto-test-framework
-- Ongoing experiments in Lyra4DAgent · AgentKit
 
 ---
 

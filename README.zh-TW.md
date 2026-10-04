@@ -212,7 +212,6 @@ Docker 化執行 · GitHub Actions CI
 - 打磨 atlas-claw 的內嵌 / 獨立雙模式，擴充內部系統的 Provider 與稽核報表
 - 迭代 MewCode 的多 Agent 協作與 Skills 生態，補齊 Hooks 與 MCP 的邊界場景
 - 沉澱 api-auto-test-framework 的校驗器與用例庫
-- Lyra4DAgent · AgentKit 等實驗儲存庫的持續迭代
 
 ---
 
