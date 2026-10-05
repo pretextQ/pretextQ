@@ -15,7 +15,7 @@
 <h3 align="center">我构建的不是“会跑的 Demo”，而是权限可控、结果可验证、能落进企业生产环境的系统。</h3>
 
 <p align="center">
-  AI Agent Framework · Enterprise RBAC · Coding Agent 原理与实现 · 接口自动化测试 · DevOps 工程化
+  AI Agent Framework · Enterprise RBAC · Coding Agent 与告警自动化 · 接口自动化测试 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -44,7 +44,7 @@
     </td>
     <td width="33%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
-      AI Coding Agent 的核心原理如何落地为工程实现：Agent 主循环、工具调用、权限分层、MCP 扩展与上下文管理。
+      AI Coding Agent 如何无人值守地把线上告警变成可人审的修复 PR：OS 级沙箱、只读工具链、结构化证据链与有界重试。
     </td>
     <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
@@ -55,7 +55,7 @@
 
 ```text
 atlas-claw              →  企业 Agent 的统一入口、权限继承与可插拔集成
-MewCode                 →  完整实现 AI Coding Agent：主循环、工具与权限
+MewCode                 →  告警进来、PR 出去：沙箱里的无人值守修复
 api-auto-test-framework →  用数据驱动与双重校验证明每一次接口行为
 ```
 
@@ -106,49 +106,48 @@ Agent 在企业里最常见的失败不是“不够聪明”，而是权限失�
 
 ## 02 / MewCode
 
-### [A complete AI Coding Agent implementation, from first principles](https://github.com/pretextQ/MewCode)
+### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
-> 把 AI Coding Agent 的完整实现摊开来看：Agent 主循环、工具调用、权限分层、MCP 扩展——可读、可跑、可改。
+> 同一个 agent 内核，两种形态：交互式 CLI/TUI 帮你写代码；无头服务常驻接线上告警——agent 在 OS 级沙箱里定位、修复、验证，以 PR 交给人工 review。人审 PR 是唯一必经的人工点，服务没有任何 merge 权限。
 
-| 项目形态 | 核心定位 | 界面形态 | Links |
+| 项目形态 | 核心定位 | 信任边界 | Links |
 |---|---|---|---|
-| AI Coding Agent 完整实现 | Agent 原理 · 工具系统 · 权限分层 | Textual 终端 TUI | [Repository](https://github.com/pretextQ/MewCode) |
+| AI Coding Agent + 告警驱动的自动化开发服务 | 告警 → 修复 PR · OS 级沙箱 · 有界重试 | 人审 PR 唯一门禁 · 服务无 merge 权限 | [Repository](https://github.com/pretextQ/MewCode) |
 
-MewCode 是一个 AI Coding Agent 的完整实现，目标是把 AI Agent 的核心原理与工程实践讲清楚：不止是“会调模型的循环”，而是把工具系统、权限模型、上下文与记忆管理、MCP 扩展一一实现到位。界面基于 Textual 构建，Windows 是一等公民运行平台。
+MewCode 把“收到告警 → 定位 → 修复 → 验证 → 提交 review”这条值班链路自动化：Alertmanager webhook 触发，每个 job 在独立沙箱与 git worktree 中执行，PR body 自带结构化证据链——告警摘要、根因、测试前后对比、集成验证——review 者不看 agent 日志也能做判断。真机评估集回放 6 单全部无人值守跑通：修复 PR 成功率 100%，告警→PR 中位 25–26 秒。
 
-### 一个 Coding Agent 的完整骨架
+### 从告警到 PR 的无人值守链路
 
 ```text
-用户输入（Textual TUI）
+告警（Alertmanager webhook）
       ↓
-Agent 主循环（asyncio 驱动）
+服务层 ── SQLite 状态机 · 指纹去重 · 重启恢复
       ↓
-LLM 客户端（anthropic / openai / openai-compat 三协议）
+每 job 隔离单元（git worktree + Docker 沙箱）
       ↓
-工具调用 ── 内建工具 · Skills · MCP（stdio / Streamable HTTP）
+Agent 内核 ── 定位 · 修复 · 有界重试（超限 escalate）
       ↓
-权限分层 ── 敏感操作弹窗确认，不静默执行
+验证 ── 回归测试 + 自起 docker-compose 集成测试
       ↓
-上下文与记忆管理 · Hooks · 文件历史
-      ↓
-多 Agent 协作（teams / worktree）
+PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 ```
 
-- **完整 Agent 主循环**：asyncio 驱动的对话循环，Plan / AskUser / Permission 对话框内建，Agent 每一步行为可见、可控。
-- **多协议模型接入**：anthropic / openai / openai-compat 三种协议即配即用，支持 extended thinking，API Key 走环境变量回退。
-- **可扩展的工具系统**：内建文件与命令工具，Skills 与 Memory 沉淀能力，MCP 以 stdio / Streamable HTTP 双传输接入外部工具。
-- **权限分层语义**：敏感操作弹出确认对话框而不是静默执行，权限语义写成文档，危险动作有明确边界。
-- **Hooks 契约**：stdin JSON 契约清晰，生命周期钩子可观测、可拦截，扩展点行为可预期。
-- **多 Agent 协作**：teams 与 worktree 做任务隔离，teammate 树状管理，文件历史可回溯。
-- **Windows 一等公民**：GBK 编码读取、行尾保持、进程树清理等平台边界有专门文档与处理。
+- **告警进来，PR 出去**：demo 仓库保留历次无人值守运行的真实 PR，每份都是完整证据链，可从 [PR #5](https://github.com/pretextQ/mewcode-alert-demo/pull/5) 看起。
+- **修不好就诚实升级**：重试有上限，超限进入 escalate 并附上已尝试的分析；验证不过的修复不会被发布，绝不产生垃圾 PR。
+- **OS 级沙箱**：agent 在容器内执行——非 root、全部能力丢弃、只读根文件系统、CPU/内存/PID 限额、硬超时强杀，宿主配置与密钥不进容器。
+- **内部工具链只读**：内置生产日志（Loki）与 CI 状态（GitHub）两个 MCP server，整条取数路径只有 GET；未声明 readOnlyHint 的工具在服务模式一律不挂。
+- **自起测试环境**：仓库带 docker-compose.yml 时自动起依赖，在沙箱内跑集成测试；无容器运行时则如实记录“未执行”，不用假验证充数。
+- **运营可量化**：/metrics（Prometheus）、单 job JSON 复盘、按仓库 token 成本；评估集回放让每次提示词/内核改动都有成功率、MTTR 与成本的前后对比。
+- **多仓库策略**：`.mewcode/policy.yaml` 声明触发路由、目标分支、token 预算与通知渠道，按 job 现读、改文件即生效，损坏的策略快速失败而非静默回退。
+- **交互式内核同样完整**：工具集 + 权限分层管线（deny 优先于白名单）+ Skill 与 MCP 扩展，Windows 是一等公民平台。
 
 ### 这个项目真正要解决的问题
 
-AI Coding Agent 的内部实现大多封装在商业产品里：会用的人多，能说清主循环怎么转、工具怎么编排、权限怎么拦截的人少。MewCode 把这层黑盒打开——每一步都是可读、可跑、可改的工程代码，而不是概念图。
+无人值守写代码最难的不是“修得快”，而是“凭什么信”：权限怎么收敛、行为怎么隔离、证据怎么沉淀、改坏了怎么保证不上线。MewCode 把信任当成设计起点——headless 模式下“要问人”的动作一律拒绝而非放行，PR 是唯一出口，人是唯一门禁。
 
 **Core Stack**
 
-`Python 3.11` `Textual` `asyncio` `MCP` `uv` `pytest` `ruff` `mypy` `GitHub Actions`
+`Python 3.11` `Textual` `asyncio` `Docker 沙箱` `MCP` `Prometheus` `SQLite` `GitHub Actions`
 
 ---
 
@@ -209,14 +208,14 @@ Docker 化执行 · GitHub Actions CI
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent & Backend** | Python, FastAPI, SQLAlchemy, JWT / RBAC | 服务层、领域模型、权限继承与会话管理 |
-| **Agent Internals** | Textual, asyncio, MCP, Hooks, uv | Agent 主循环、工具系统、权限分层与上下文管理 |
+| **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 内核、权限分层、沙箱执行与告警服务化 |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | 接口回归、双重校验、静态类型与风格检查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飞书 | CI、环境编排、报告与结果通知 |
 
 ## 最近在做的事
 
 - 打磨 atlas-claw 的内嵌 / 独立双模式，扩充内部系统的 Provider 与审计报表
-- 迭代 MewCode 的多 Agent 协作与 Skills 生态，补齐 Hooks 与 MCP 的边界场景
+- 打磨 MewCode 的沙箱 egress 白名单与告警触达，扩充评估集用例
 - 沉淀 api-auto-test-framework 的校验器与用例库
 
 ---

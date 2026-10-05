@@ -15,7 +15,7 @@
 <h3 align="center">I don't build chat demos — I build permission-controlled, verifiable systems that ship to enterprise production.</h3>
 
 <p align="center">
-  AI Agent Framework · Enterprise RBAC · Coding Agent Internals · API Test Automation · DevOps Engineering
+  AI Agent Framework · Enterprise RBAC · Coding Agent & Alert Automation · API Test Automation · DevOps Engineering
 </p>
 
 <p align="center">
@@ -38,7 +38,7 @@ These three projects cover the full engineering chain I care about:
     </td>
     <td width="33%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
-      How the core of a coding agent becomes a working implementation: agent loop, tool calling, permission layering, MCP extensions and context management.
+      How an AI coding agent turns production alerts into reviewable fix PRs unattended: OS-level sandbox, read-only toolchain, structured evidence chains and bounded retries.
     </td>
     <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
@@ -49,7 +49,7 @@ These three projects cover the full engineering chain I care about:
 
 ```text
 atlas-claw              →  unified entry point, permission inheritance, pluggable integrations
-MewCode                 →  a complete coding agent implementation: loop, tools, permissions
+MewCode                 →  alerts in, PRs out: unattended fixes in an OS sandbox
 api-auto-test-framework →  prove every API behavior with data-driven dual validation
 ```
 
@@ -100,49 +100,48 @@ The most common enterprise agent failures are not "not smart enough" — they ar
 
 ## 02 / MewCode
 
-### [A complete AI Coding Agent implementation, from first principles](https://github.com/pretextQ/MewCode)
+### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
-> The full anatomy of an AI coding agent — agent loop, tool calling, permission layering, MCP extensions — readable, runnable, modifiable.
+> One agent core, two shapes: an interactive CLI/TUI that writes code with you, and a headless service that stays resident on production alerts — the agent locates, fixes and verifies inside an OS-level sandbox, then hands the result back as a PR. Human PR review is the only mandatory gate; the service holds no merge permission.
 
-| Form | Focus | Interface | Links |
+| Form | Focus | Trust boundary | Links |
 |---|---|---|---|
-| Complete AI coding agent implementation | Agent loop · Tool system · Permission layering | Textual terminal TUI | [Repository](https://github.com/pretextQ/MewCode) |
+| AI Coding Agent + alert-driven dev service | Alert → fix PR · OS-level sandbox · bounded retries | Human review is the only gate · no merge permission | [Repository](https://github.com/pretextQ/MewCode) |
 
-MewCode is a complete implementation of an AI coding agent, built to make the core principles and engineering practices concrete: not just "a loop that calls the model" — the tool system, permission model, context and memory management, and MCP extensions are all implemented end to end. The UI is built on Textual, and Windows is a first-class platform.
+MewCode automates the on-call chain "alert arrives → locate → fix → verify → submit for review": Alertmanager webhooks trigger jobs, every job runs in its own sandbox and git worktree, and the PR body carries a structured evidence chain — alert summary, root cause, before/after test comparison, integration verification — so reviewers can judge without reading agent logs. A real-machine evaluation replay ran 6/6 jobs fully unattended: 100% fix-PR success rate, 25–26s median alert→PR.
 
-### The full skeleton of a coding agent
+### The unattended path from alert to PR
 
 ```text
-User input (Textual TUI)
+Alert (Alertmanager webhook)
       ↓
-Agent loop (asyncio-driven)
+Service layer ── SQLite state machine · fingerprint dedup · restart recovery
       ↓
-LLM client (anthropic / openai / openai-compat protocols)
+Isolated unit per job (git worktree + Docker sandbox)
       ↓
-Tool calls ── built-in tools · skills · MCP (stdio / Streamable HTTP)
+Agent core ── locate · fix · bounded retries (escalate on limit)
       ↓
-Permission layering ── sensitive actions require confirmation, never silent
+Verification ── regression tests + self-started docker-compose integration tests
       ↓
-Context & memory management · hooks · file history
-      ↓
-Multi-agent collaboration (teams / worktrees)
+PR + CI gate ─▶ human review (the only release gate)
 ```
 
-- **Complete agent loop**: an asyncio-driven conversation loop with built-in Plan / AskUser / Permission dialogs — every step of the agent stays visible and controllable.
-- **Multi-protocol model access**: anthropic / openai / openai-compat protocols work out of the box, with extended thinking support and API-key env-var fallback.
-- **Extensible tool system**: built-in file and command tools, capabilities distilled into skills and memory, and MCP over stdio / Streamable HTTP for external tools.
-- **Permission layering semantics**: sensitive actions raise a confirmation dialog instead of running silently; the permission semantics are documented with explicit boundaries.
-- **Hook contract**: a clear stdin JSON contract — lifecycle hooks are observable and interceptable, so extension points behave predictably.
-- **Multi-agent collaboration**: teams and worktrees isolate tasks, teammates are managed as a tree, and file history stays traceable.
-- **Windows as a first-class citizen**: platform edges — GBK encoding, line endings, process-tree cleanup — are documented and handled.
+- **Alerts in, PRs out**: the demo repo keeps the real PRs from past unattended runs, each one a complete evidence chain — start from [PR #5](https://github.com/pretextQ/mewcode-alert-demo/pull/5).
+- **Honest escalation**: retries are bounded; on limit the job escalates with the analysis it already produced. A fix that fails verification is never published — no garbage PRs.
+- **OS-level sandbox**: the agent runs inside a container — non-root, all capabilities dropped, read-only root filesystem, CPU/memory/PID limits, hard-timeout kill; host config and secrets never enter the container.
+- **Read-only internal toolchain**: two built-in MCP servers — production logs (Loki) and CI status (GitHub) — with GET-only data paths; tools without `readOnlyHint` are never mounted in service mode.
+- **Self-started test environments**: when the repo ships a docker-compose.yml, the service brings up dependencies and runs integration tests inside the sandbox; with no container runtime it honestly records "not executed" instead of faking verification.
+- **Measurable operations**: /metrics (Prometheus), per-job JSON retrospectives, per-repo token costs; evaluation-set replay gives success-rate, MTTR and cost before/after numbers for every prompt or core change.
+- **Per-repo policy**: `.mewcode/policy.yaml` declares severity routing, target branch, token budget and notification channels — read per job, effective on save; broken policies fail fast instead of silently falling back.
+- **The interactive kernel is complete too**: tool set + permission pipeline (deny overrides allowlist) + skills and MCP extensions; Windows is a first-class platform.
 
 ### The questions I care about in this project
 
-The internals of coding agents are locked inside commercial products: plenty of people use them, few can explain how the agent loop runs, how tool calls are orchestrated, or how permissions intercept actions. MewCode opens that black box — every step is readable, runnable, modifiable engineering code, not a concept diagram.
+The hard part of unattended coding is not fixing fast — it is what makes it trustworthy: how permissions are constrained, how behavior is isolated, how evidence is recorded, and how a broken fix is guaranteed never to ship. MewCode treats trust as the design starting point — in headless mode, actions that "would need to ask a human" are denied, not waved through; the PR is the only exit, the human is the only gate.
 
 **Core Stack**
 
-`Python 3.11` `Textual` `asyncio` `MCP` `uv` `pytest` `ruff` `mypy` `GitHub Actions`
+`Python 3.11` `Textual` `asyncio` `Docker sandbox` `MCP` `Prometheus` `SQLite` `GitHub Actions`
 
 ---
 
@@ -203,14 +202,14 @@ The value of automated testing is not how much it runs — it is whether failure
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent & Backend** | Python, FastAPI, SQLAlchemy, JWT / RBAC | Service layer, domain models, permission inheritance, session management |
-| **Agent Internals** | Textual, asyncio, MCP, Hooks, uv | Agent loop, tool system, permission layering, context management |
+| **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent loop, permission layering, sandboxed execution, alert-driven service mode |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | API regression, dual validation, static typing and lint checks |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, Feishu | CI, environment orchestration, reporting and notifications |
 
 ## Currently in progress
 
 - Refining atlas-claw's embedded / standalone modes, expanding providers and audit reports
-- Iterating on MewCode's multi-agent collaboration and skills ecosystem, hardening hooks and MCP edge cases
+- Hardening MewCode's sandbox egress whitelist and growing the alert evaluation suite
 - Growing the validator and case library of api-auto-test-framework
 
 ---

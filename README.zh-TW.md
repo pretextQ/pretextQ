@@ -15,7 +15,7 @@
 <h3 align="center">我建構的不是「會跑的 Demo」，而是權限可控、結果可驗證、能落進企業生產環境的系統。</h3>
 
 <p align="center">
-  AI Agent Framework · Enterprise RBAC · Coding Agent 原理與實作 · 介面自動化測試 · DevOps 工程化
+  AI Agent Framework · Enterprise RBAC · Coding Agent 與告警自動化 · 介面自動化測試 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -38,7 +38,7 @@
     </td>
     <td width="33%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
-      AI Coding Agent 的核心原理如何落地為工程實作：Agent 主迴圈、工具呼叫、權限分層、MCP 擴充與上下文管理。
+      AI Coding Agent 如何無人值守地把線上告警變成可人審的修復 PR：OS 級沙箱、唯讀工具鏈、結構化證據鏈與有界重試。
     </td>
     <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
@@ -49,7 +49,7 @@
 
 ```text
 atlas-claw              →  企業 Agent 的統一入口、權限繼承與可插拔整合
-MewCode                 →  完整實作 AI Coding Agent：主迴圈、工具與權限
+MewCode                 →  告警進來、PR 出去：沙箱裡的無人值守修復
 api-auto-test-framework →  用資料驅動與雙重校驗證明每一次介面行為
 ```
 
@@ -100,49 +100,48 @@ Agent 在企業裡最常見的失敗不是「不夠聰明」，而是權限失�
 
 ## 02 / MewCode
 
-### [A complete AI Coding Agent implementation, from first principles](https://github.com/pretextQ/MewCode)
+### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
-> 把 AI Coding Agent 的完整實作攤開來看：Agent 主迴圈、工具呼叫、權限分層、MCP 擴充——可讀、可跑、可改。
+> 同一個 agent 核心，兩種形態：互動式 CLI/TUI 幫你寫程式碼；無頭服務常駐接線上告警——agent 在 OS 級沙箱裡定位、修復、驗證，以 PR 交給人工 review。人審 PR 是唯一必經的人工節點，服務沒有任何 merge 權限。
 
-| 專案形態 | 核心定位 | 介面形態 | Links |
+| 專案形態 | 核心定位 | 信任邊界 | Links |
 |---|---|---|---|
-| AI Coding Agent 完整實作 | Agent 原理 · 工具系統 · 權限分層 | Textual 終端 TUI | [Repository](https://github.com/pretextQ/MewCode) |
+| AI Coding Agent + 告警驅動的自動化開發服務 | 告警 → 修復 PR · OS 級沙箱 · 有界重試 | 人審 PR 唯一關卡 · 服務無 merge 權限 | [Repository](https://github.com/pretextQ/MewCode) |
 
-MewCode 是一個 AI Coding Agent 的完整實作，目標是把 AI Agent 的核心原理與工程實務講清楚：不只是「會呼叫模型的迴圈」，而是把工具系統、權限模型、上下文與記憶管理、MCP 擴充一一實作到位。介面以 Textual 建構，Windows 是一等公民執行平台。
+MewCode 把「收到告警 → 定位 → 修復 → 驗證 → 提交 review」這條值班鏈路自動化：Alertmanager webhook 觸發，每個 job 在獨立沙箱與 git worktree 中執行，PR body 自帶結構化證據鏈——告警摘要、根因、測試前後對比、整合驗證——審查者不看 agent 日誌也能做判斷。真機評估集回放 6 單全部無人值守跑通：修復 PR 成功率 100%，告警→PR 中位數 25–26 秒。
 
-### 一個 Coding Agent 的完整骨架
+### 從告警到 PR 的無人值守鏈路
 
 ```text
-使用者輸入（Textual TUI）
+告警（Alertmanager webhook）
       ↓
-Agent 主迴圈（asyncio 驅動）
+服務層 ── SQLite 狀態機 · 指紋去重 · 重啟恢復
       ↓
-LLM 用戶端（anthropic / openai / openai-compat 三種協定）
+每 job 隔離單元（git worktree + Docker 沙箱）
       ↓
-工具呼叫 ── 內建工具 · Skills · MCP（stdio / Streamable HTTP）
+Agent 核心 ── 定位 · 修復 · 有界重試（超限 escalate）
       ↓
-權限分層 ── 敏感操作彈窗確認，不靜默執行
+驗證 ── 迴歸測試 + 自起 docker-compose 整合測試
       ↓
-上下文與記憶管理 · Hooks · 檔案歷史
-      ↓
-多 Agent 協作（teams / worktree）
+PR + CI 關卡 ─▶ 人工 review（唯一上線關卡）
 ```
 
-- **完整 Agent 主迴圈**：asyncio 驅動的對話迴圈，內建 Plan / AskUser / Permission 對話框，Agent 每一步行為可見、可控。
-- **多協定模型接入**：anthropic / openai / openai-compat 三種協定即配即用，支援 extended thinking，API Key 走環境變數回退。
-- **可擴充的工具系統**：內建檔案與指令工具，Skills 與 Memory 沉澱能力，MCP 以 stdio / Streamable HTTP 雙傳輸接入外部工具。
-- **權限分層語義**：敏感操作彈出確認對話框而不是靜默執行，權限語義寫成文件，危險動作有明確邊界。
-- **Hooks 契約**：stdin JSON 契約清晰，生命週期鉤子可觀測、可攔截，擴充點行為可預期。
-- **多 Agent 協作**：teams 與 worktree 做任務隔離，teammate 樹狀管理，檔案歷史可回溯。
-- **Windows 一等公民**：GBK 編碼讀取、行尾保持、行程樹清理等平台邊界有專門文件與處理。
+- **告警進來，PR 出去**：demo 儲存庫保留歷次無人值守執行的真實 PR，每份都是完整證據鏈，可從 [PR #5](https://github.com/pretextQ/mewcode-alert-demo/pull/5) 看起。
+- **修不好就誠實升級**：重試有上限，超限進入 escalate 並附上已嘗試的分析；驗證不過的修復不會被發布，絕不產生垃圾 PR。
+- **OS 級沙箱**：agent 在容器內執行——非 root、全部能力丟棄、唯讀根檔案系統、CPU/記憶體/PID 限制、硬逾時強制終止，宿主設定與金鑰不進容器。
+- **內部工具鏈唯讀**：內建生產日誌（Loki）與 CI 狀態（GitHub）兩個 MCP server，讀取路徑只有 GET；未聲明 readOnlyHint 的工具在服務模式一律不掛。
+- **自起測試環境**：儲存庫帶 docker-compose.yml 時自動啟動依賴，在沙箱內跑整合測試；無容器執行環境則如實記錄「未執行」，不用假驗證充數。
+- **營運可量化**：/metrics（Prometheus）、單 job JSON 複盤、按儲存庫 token 成本；評估集回放讓每次提示詞/核心改動都有成功率、MTTR 與成本的前後對比。
+- **多儲存庫策略**：`.mewcode/policy.yaml` 聲明觸發路由、目標分支、token 預算與通知管道，按 job 即時讀取、改檔案即生效，損壞的策略快速失敗而非靜默回退。
+- **互動式核心同樣完整**：工具集 + 權限分層管線（deny 優先於白名單）+ Skill 與 MCP 擴充，Windows 是一等公民平台。
 
 ### 這個專案真正要解決的問題
 
-AI Coding Agent 的內部實作大多封裝在商業產品裡：會用的人多，能說清主迴圈怎麼轉、工具怎麼編排、權限怎麼攔截的人少。MewCode 把這層黑盒打開——每一步都是可讀、可跑、可改的工程程式碼，而不是概念圖。
+無人值守寫程式碼最難的不是「修得快」，而是「憑什麼信」：權限怎麼收斂、行為怎麼隔離、證據怎麼沉澱、改壞了怎麼保證不上線。MewCode 把信任當成設計起點——headless 模式下「要問人」的動作一律拒絕而非放行，PR 是唯一出口，人是唯一關卡。
 
 **Core Stack**
 
-`Python 3.11` `Textual` `asyncio` `MCP` `uv` `pytest` `ruff` `mypy` `GitHub Actions`
+`Python 3.11` `Textual` `asyncio` `Docker 沙箱` `MCP` `Prometheus` `SQLite` `GitHub Actions`
 
 ---
 
@@ -203,14 +202,14 @@ Docker 化執行 · GitHub Actions CI
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent & Backend** | Python, FastAPI, SQLAlchemy, JWT / RBAC | 服務層、領域模型、權限繼承與對話管理 |
-| **Agent Internals** | Textual, asyncio, MCP, Hooks, uv | Agent 主迴圈、工具系統、權限分層與上下文管理 |
+| **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 核心、權限分層、沙箱執行與告警服務化 |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | 介面迴歸、雙重校驗、靜態型別與風格檢查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飛書 | CI、環境編排、報告與結果通知 |
 
 ## 最近在做的事
 
 - 打磨 atlas-claw 的內嵌 / 獨立雙模式，擴充內部系統的 Provider 與稽核報表
-- 迭代 MewCode 的多 Agent 協作與 Skills 生態，補齊 Hooks 與 MCP 的邊界場景
+- 打磨 MewCode 的沙箱 egress 白名單與告警觸達，擴充評估集用例
 - 沉澱 api-auto-test-framework 的校驗器與用例庫
 
 ---
