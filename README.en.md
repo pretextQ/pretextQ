@@ -15,7 +15,7 @@
 <h3 align="center">I don't build chat demos — I build permission-controlled, verifiable systems that ship to enterprise production.</h3>
 
 <p align="center">
-  Coding Agent & Alert Automation · API Test Automation · DevOps Engineering
+  Coding Agent & Alert Automation · Agent Evaluation & Observation · API Test Automation · DevOps Engineering
 </p>
 
 <p align="center">
@@ -24,19 +24,23 @@
 
 ---
 
-## Two repos, from automated fixes to continuous verification
+## Three repos: automated fixes, agent evaluation and API verification
 
 I treat "can it ship to enterprise production" as the first metric of any system: the model is just the reasoning component — what actually decides success is the permission boundary, tool and context governance, verification tooling and observability.
 
-These two projects focus on the automated fix and continuous verification chain I care about:
+These three projects cover automated fixes, agent evaluation and API verification:
 
 <table>
   <tr>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
       How an AI coding agent turns production alerts into reviewable fix PRs unattended: OS-level sandbox, read-only toolchain, structured evidence chains and bounded retries.
     </td>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
+      <strong>👁️ Agent Evaluation / Observation</strong><br/><br/>
+      Evaluate agents with external datasets and custom scoring, connecting traces and evidence to versioned regression reports.
+    </td>
+    <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
       How to prove system behavior is correct: YAML data-driven cases, dual response/database validation, continuous regression and CI.
     </td>
@@ -45,6 +49,7 @@ These two projects focus on the automated fix and continuous verification chain 
 
 ```text
 MewCode                 →  alerts in, PRs out: unattended fixes in an OS sandbox
+eyes                    →  agent evaluation, execution observation and regression evidence
 api-auto-test-framework →  prove every API behavior with data-driven dual validation
 ```
 
@@ -97,7 +102,45 @@ The hard part of unattended coding is not fixing fast — it is what makes it tr
 
 ---
 
-## 02 / api-auto-test-framework
+## 02 / eyes
+
+### [Agent evaluation and execution observation](https://github.com/pretextQ/eyes)
+
+> Evaluate agent changes with external datasets, custom scoring and execution evidence.
+
+| Form | Focus | Status | Links |
+|---|---|---|---|
+| Self-hosted agent evaluation and observation platform | Concurrent experiments · scoring · traces · regression reports | Backend, Runner, SDK and console implemented; acceptance work remains | [Repository](https://github.com/pretextQ/eyes) |
+
+eyes connects versioned experiments to execution attempts, scores, traces and artifacts. It supports HTTP/Python integration, multi-agent batches and passive observation of local agent sessions.
+
+### From execution to regression evidence
+
+```text
+Agent + JSONL dataset + custom scorer
+      ↓
+Control backend / scheduler ── versions · concurrency limits
+      ↓
+Independent Runner ── attempts · traces · artifacts
+      ↓
+Scoring process ── decisions · reasons · evidence references
+      ↓
+Web / CLI / API ── regression reports · CI gates
+```
+
+- **Traceable scores**: link decisions to attempts, scoring rules and evidence.
+- **Visible observation gaps**: show collected calls and relationships alongside missing evidence.
+- **Comparable regressions**: pin configurations and flag dataset or scoring changes.
+- **Separate scoring**: independent execution and scoring, with cancellation, retries and retention controls.
+- **Explicit validation scope**: Deta/Zeta Python concurrency and cancellation validated; real HTTP agents, full Runner restart recovery and capacity acceptance remain pending.
+
+**Core Stack**
+
+`Python 3.14` `FastAPI` `SQLAlchemy` `PostgreSQL` `OpenTelemetry` `React` `TypeScript` `Vite`
+
+---
+
+## 03 / api-auto-test-framework
 
 ### [YAML-driven API testing with dual validation](https://github.com/pretextQ/api-auto-test-framework)
 
@@ -139,7 +182,7 @@ The value of automated testing is not how much it runs — it is whether failure
 
 ---
 
-## The method behind the two projects
+## The method behind the three projects
 
 | Principle | How I engineer |
 |---|---|
@@ -154,6 +197,7 @@ The value of automated testing is not how much it runs — it is whether failure
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent loop, permission layering, sandboxed execution, alert-driven service mode |
+| **Agent Evaluation & Web** | Python, FastAPI, SQLAlchemy, PostgreSQL, OpenTelemetry, React, TypeScript | Control plane, independent Runner, traces, scoring and regression reports |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | API regression, dual validation, static typing and lint checks |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, Feishu | CI, environment orchestration, reporting and notifications |
 

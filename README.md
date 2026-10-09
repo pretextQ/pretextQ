@@ -15,7 +15,7 @@
 <h3 align="center">我构建的不是“会跑的 Demo”，而是权限可控、结果可验证、能落进企业生产环境的系统。</h3>
 
 <p align="center">
-  Coding Agent 与告警自动化 · 接口自动化测试 · DevOps 工程化
+  Coding Agent 与告警自动化 · Agent 评估与执行观测 · 接口自动化测试 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -30,19 +30,23 @@
 
 ---
 
-## 两个仓库，从自动修复到持续验证
+## 三个仓库，从自动修复到 Agent 评估与接口验证
 
 我习惯把“能不能落进企业生产环境”当作系统的第一指标：模型只是其中的判断组件，真正决定成败的，是权限边界、工具与上下文治理、验证手段和可观测性。
 
-这两个项目聚焦我最关心的自动修复与持续验证链路：
+这三个项目覆盖自动修复、Agent 评估与接口验证：
 
 <table>
   <tr>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
       AI Coding Agent 如何无人值守地把线上告警变成可人审的修复 PR：OS 级沙箱、只读工具链、结构化证据链与有界重试。
     </td>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
+      <strong>👁️ Agent Evaluation / Observation</strong><br/><br/>
+      用外部测试集与自定义评分验证 Agent，关联执行轨迹、评分证据与版本回归报告。
+    </td>
+    <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
       如何证明系统行为正确：YAML 数据驱动、接口与数据库双重校验、持续回归与 CI 闭环。
     </td>
@@ -51,6 +55,7 @@
 
 ```text
 MewCode                 →  告警进来、PR 出去：沙箱里的无人值守修复
+eyes                    →  Agent 测试、执行观测与有证据的回归对比
 api-auto-test-framework →  用数据驱动与双重校验证明每一次接口行为
 ```
 
@@ -103,7 +108,45 @@ PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 
 ---
 
-## 02 / api-auto-test-framework
+## 02 / eyes
+
+### [Agent evaluation and execution observation](https://github.com/pretextQ/eyes)
+
+> 用外部测试集、自定义评分与执行证据，验证 Agent 修改是否有效，并看清每次任务如何执行。
+
+| 项目形态 | 核心定位 | 当前状态 | Links |
+|---|---|---|---|
+| 自托管 Agent 测试与执行观测平台 | 并发实验 · 自定义评分 · 执行证据 · 回归对比 | 控制后端、Runner、SDK 与 Web 控制台已实现；部分验收待完成 | [Repository](https://github.com/pretextQ/eyes) |
+
+eyes 将目标 Agent、测试集版本、评分器版本和执行配置绑定到实验，关联用例执行、评分记录、轨迹与产物。支持 HTTP/Python 接入、独立评分进程、多 Agent 批次和持久化回归报告，也可通过 SDK 直接观测本地 Agent 会话，无需先创建实验。
+
+### 从执行过程到回归证据
+
+```text
+目标 Agent + JSONL 测试集 + 自定义评分器
+      ↓
+控制后端与调度器 ── 固定版本 · 并发限制
+      ↓
+独立 Runner ── 执行尝试 · 轨迹 · 产物
+      ↓
+独立评分进程 ── 判定 · 理由 · 证据引用
+      ↓
+Web / CLI / API ── 回归报告 · CI 质量门槛
+```
+
+- **评分可追溯**：结论关联用例、执行尝试、评分口径和实际证据，区分执行失败、评分失败与证据不足。
+- **执行过程可观测**：展示已采集的模型调用、工具执行和调用关系，明确采集覆盖范围与缺失状态。
+- **回归口径明确**：固定实验配置，按用例版本比较改善与退化，单独标记测试集或评分口径变化带来的不可比项。
+- **执行与评分分离**：独立 Runner 和评分进程，支持评分取消、重试及证据保留清理。
+- **验证边界透明**：已完成 Deta、Zeta 两个真实 Python Agent 的并发与取消验证；真实 HTTP Agent、Runner 整体重启恢复及容量验收仍待完成。
+
+**Core Stack**
+
+`Python 3.14` `FastAPI` `SQLAlchemy` `PostgreSQL` `OpenTelemetry` `React` `TypeScript` `Vite`
+
+---
+
+## 03 / api-auto-test-framework
 
 ### [YAML-driven API testing with dual validation](https://github.com/pretextQ/api-auto-test-framework)
 
@@ -145,7 +188,7 @@ Docker 化执行 · GitHub Actions CI
 
 ---
 
-## 贯穿两个项目的工程原则
+## 贯穿三个项目的工程原则
 
 | 原则 | 我的工程取向 |
 |---|---|
@@ -160,6 +203,7 @@ Docker 化执行 · GitHub Actions CI
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 内核、权限分层、沙箱执行与告警服务化 |
+| **Agent Evaluation & Web** | Python, FastAPI, SQLAlchemy, PostgreSQL, OpenTelemetry, React, TypeScript | 服务控制面、独立 Runner、执行轨迹、评分与回归报告 |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | 接口回归、双重校验、静态类型与风格检查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飞书 | CI、环境编排、报告与结果通知 |
 

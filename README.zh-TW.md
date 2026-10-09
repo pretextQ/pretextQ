@@ -15,7 +15,7 @@
 <h3 align="center">我建構的不是「會跑的 Demo」，而是權限可控、結果可驗證、能落進企業生產環境的系統。</h3>
 
 <p align="center">
-  Coding Agent 與告警自動化 · 介面自動化測試 · DevOps 工程化
+  Coding Agent 與告警自動化 · Agent 評估與執行觀測 · 介面自動化測試 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -24,19 +24,23 @@
 
 ---
 
-## 兩個儲存庫，從自動修復到持續驗證
+## 三個儲存庫，從自動修復到 Agent 評估與介面驗證
 
 我習慣把「能不能落進企業生產環境」當作系統的第一指標：模型只是其中的判斷元件，真正決定成敗的，是權限邊界、工具與上下文治理、驗證手段和可觀測性。
 
-這兩個專案聚焦我最關心的自動修復與持續驗證鏈路：
+這三個專案涵蓋自動修復、Agent 評估與介面驗證：
 
 <table>
   <tr>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
       AI Coding Agent 如何無人值守地把線上告警變成可人審的修復 PR：OS 級沙箱、唯讀工具鏈、結構化證據鏈與有界重試。
     </td>
-    <td width="50%" valign="top">
+    <td width="33%" valign="top">
+      <strong>👁️ Agent Evaluation / Observation</strong><br/><br/>
+      用外部測試集與自訂評分驗證 Agent，關聯執行軌跡、評分證據與版本迴歸報告。
+    </td>
+    <td width="33%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
       如何證明系統行為正確：YAML 資料驅動、介面與資料庫雙重校驗、持續迴歸與 CI 閉環。
     </td>
@@ -45,6 +49,7 @@
 
 ```text
 MewCode                 →  告警進來、PR 出去：沙箱裡的無人值守修復
+eyes                    →  Agent 測試、執行觀測與有證據的迴歸比較
 api-auto-test-framework →  用資料驅動與雙重校驗證明每一次介面行為
 ```
 
@@ -97,7 +102,45 @@ PR + CI 關卡 ─▶ 人工 review（唯一上線關卡）
 
 ---
 
-## 02 / api-auto-test-framework
+## 02 / eyes
+
+### [Agent evaluation and execution observation](https://github.com/pretextQ/eyes)
+
+> 用外部測試集、自訂評分與執行證據，驗證 Agent 修改是否有效，並看清每次任務如何執行。
+
+| 專案形態 | 核心定位 | 目前狀態 | Links |
+|---|---|---|---|
+| 自託管 Agent 測試與執行觀測平台 | 並行實驗 · 自訂評分 · 執行證據 · 迴歸比較 | 控制後端、Runner、SDK 與 Web 控制台已實作；部分驗收待完成 | [Repository](https://github.com/pretextQ/eyes) |
+
+eyes 將目標 Agent、測試集版本、評分器版本和執行設定綁定到實驗，關聯用例執行、評分紀錄、軌跡與產物。支援 HTTP/Python 接入、獨立評分程序、多 Agent 批次和持久化迴歸報告，也可透過 SDK 直接觀測本地 Agent 對話，無需先建立實驗。
+
+### 從執行過程到迴歸證據
+
+```text
+目標 Agent + JSONL 測試集 + 自訂評分器
+      ↓
+控制後端與排程器 ── 固定版本 · 並行限制
+      ↓
+獨立 Runner ── 執行嘗試 · 軌跡 · 產物
+      ↓
+獨立評分程序 ── 判定 · 理由 · 證據引用
+      ↓
+Web / CLI / API ── 迴歸報告 · CI 品質門檻
+```
+
+- **評分可追溯**：結論關聯用例、執行嘗試、評分口徑和實際證據，區分執行失敗、評分失敗與證據不足。
+- **執行過程可觀測**：展示已採集的模型呼叫、工具執行和呼叫關係，明確採集覆蓋範圍與缺失狀態。
+- **迴歸口徑明確**：固定實驗設定，按用例版本比較改善與退化，單獨標記測試集或評分口徑變化帶來的不可比項。
+- **執行與評分分離**：獨立 Runner 和評分程序，支援評分取消、重試及證據保留清理。
+- **驗證邊界透明**：已完成 Deta、Zeta 兩個真實 Python Agent 的並行與取消驗證；真實 HTTP Agent、Runner 整體重啟恢復及容量驗收仍待完成。
+
+**Core Stack**
+
+`Python 3.14` `FastAPI` `SQLAlchemy` `PostgreSQL` `OpenTelemetry` `React` `TypeScript` `Vite`
+
+---
+
+## 03 / api-auto-test-framework
 
 ### [YAML-driven API testing with dual validation](https://github.com/pretextQ/api-auto-test-framework)
 
@@ -139,7 +182,7 @@ Docker 化執行 · GitHub Actions CI
 
 ---
 
-## 貫穿兩個專案的工程原則
+## 貫穿三個專案的工程原則
 
 | 原則 | 我的工程取向 |
 |---|---|
@@ -154,6 +197,7 @@ Docker 化執行 · GitHub Actions CI
 | Layer | Technologies | What I build |
 |---|---|---|
 | **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 核心、權限分層、沙箱執行與告警服務化 |
+| **Agent Evaluation & Web** | Python, FastAPI, SQLAlchemy, PostgreSQL, OpenTelemetry, React, TypeScript | 服務控制面、獨立 Runner、執行軌跡、評分與迴歸報告 |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | 介面迴歸、雙重校驗、靜態型別與風格檢查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飛書 | CI、環境編排、報告與結果通知 |
 

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
   <title id="title">pretextQ — Agents you can actually ship</title>
-  <desc id="desc">Two projects: MewCode coding agent and alert automation, and api-auto-test-framework verification.</desc>
+  <desc id="desc">Three projects: MewCode coding agent, eyes agent evaluation and execution observation, and api-auto-test-framework verification.</desc>
   <defs>
     <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
       <circle cx="2" cy="2" r="1.2" fill="#3a4150" opacity="0.5"/>
@@ -20,24 +20,29 @@
     <text x="62" y="150" fill="#f5f7fa" font-size="54" font-weight="800" letter-spacing="-0.5">AGENTS YOU CAN</text>
     <text x="62" y="214" fill="#f5f7fa" font-size="54" font-weight="800" letter-spacing="-0.5">ACTUALLY SHIP.</text>
     <rect x="66" y="240" width="64" height="4" rx="2" fill="#ffb454"/>
-    <text x="64" y="278" fill="#98a2b3" font-size="17">Sandboxed coding agents · alerts to PRs · API testing</text>
+    <text x="64" y="278" fill="#98a2b3" font-size="17">Coding agents · agent evaluation · API testing</text>
   </g>
 
-  <line x1="880" y1="156" x2="880" y2="268" stroke="#2c3340" stroke-width="2"/>
+  <line x1="880" y1="100" x2="880" y2="324" stroke="#2c3340" stroke-width="2"/>
 
   <g font-family="Segoe UI, Inter, Arial, sans-serif">
-    <rect x="844" y="120" width="72" height="72" rx="18" fill="#151a24" stroke="#4fd6be" stroke-width="3"/>
-    <text x="880" y="164" text-anchor="middle" font-size="20" font-weight="800" fill="#4fd6be">01</text>
-    <text x="944" y="148" font-size="19" font-weight="800" fill="#f5f7fa">MEWCODE</text>
-    <text x="944" y="172" font-size="13" font-weight="700" letter-spacing="1.5" fill="#6fd0bf">CODING AGENT</text>
+    <rect x="844" y="64" width="72" height="72" rx="18" fill="#151a24" stroke="#4fd6be" stroke-width="3"/>
+    <text x="880" y="108" text-anchor="middle" font-size="20" font-weight="800" fill="#4fd6be">01</text>
+    <text x="944" y="92" font-size="19" font-weight="800" fill="#f5f7fa">MEWCODE</text>
+    <text x="944" y="116" font-size="13" font-weight="700" letter-spacing="1.5" fill="#6fd0bf">CODING AGENT</text>
 
-    <rect x="844" y="232" width="72" height="72" rx="18" fill="#151a24" stroke="#b18cff" stroke-width="3"/>
-    <text x="880" y="276" text-anchor="middle" font-size="20" font-weight="800" fill="#b18cff">02</text>
-    <text x="944" y="260" font-size="19" font-weight="800" fill="#f5f7fa">API-TEST-FW</text>
-    <text x="944" y="284" font-size="13" font-weight="700" letter-spacing="1.5" fill="#c3a4f5">VERIFICATION</text>
+    <rect x="844" y="176" width="72" height="72" rx="18" fill="#151a24" stroke="#ffb454" stroke-width="3"/>
+    <text x="880" y="220" text-anchor="middle" font-size="20" font-weight="800" fill="#ffb454">02</text>
+    <text x="944" y="204" font-size="19" font-weight="800" fill="#f5f7fa">EYES</text>
+    <text x="944" y="228" font-size="13" font-weight="700" letter-spacing="1.5" fill="#e8b563">AGENT EVALUATION</text>
+
+    <rect x="844" y="288" width="72" height="72" rx="18" fill="#151a24" stroke="#b18cff" stroke-width="3"/>
+    <text x="880" y="332" text-anchor="middle" font-size="20" font-weight="800" fill="#b18cff">03</text>
+    <text x="944" y="316" font-size="19" font-weight="800" fill="#f5f7fa">API-TEST-FW</text>
+    <text x="944" y="340" font-size="13" font-weight="700" letter-spacing="1.5" fill="#c3a4f5">VERIFICATION</text>
   </g>
 
-  <text x="1216" y="388" text-anchor="end" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" letter-spacing="2" fill="#5f6779">AUTOMATION · VERIFICATION</text>
+  <text x="1216" y="388" text-anchor="end" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="12" letter-spacing="2" fill="#5f6779">AUTOMATION · EVALUATION · VERIFICATION</text>
 
   <rect x="1" y="1" width="1278" height="418" rx="23" fill="none" stroke="#262c38" stroke-width="2"/>
 </svg>
