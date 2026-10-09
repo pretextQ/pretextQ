@@ -15,7 +15,7 @@
 <h3 align="center">我构建的不是“会跑的 Demo”，而是权限可控、结果可验证、能落进企业生产环境的系统。</h3>
 
 <p align="center">
-  AI Agent Framework · Enterprise RBAC · Coding Agent 与告警自动化 · 接口自动化测试 · DevOps 工程化
+  Coding Agent 与告警自动化 · 接口自动化测试 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -30,23 +30,19 @@
 
 ---
 
-## 三个仓库，一条完整的工程链路
+## 两个仓库，从自动修复到持续验证
 
 我习惯把“能不能落进企业生产环境”当作系统的第一指标：模型只是其中的判断组件，真正决定成败的，是权限边界、工具与上下文治理、验证手段和可观测性。
 
-这三个项目恰好覆盖了我最关心的完整工程链路：
+这两个项目聚焦我最关心的自动修复与持续验证链路：
 
 <table>
   <tr>
-    <td width="33%" valign="top">
-      <strong>⚙️ Agent Framework</strong><br/><br/>
-      Agent 如何以登录用户的身份、在企业权限体系内调用内部系统：统一入口、权限继承、可插拔集成、Trace 与审计。
-    </td>
-    <td width="33%" valign="top">
+    <td width="50%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
       AI Coding Agent 如何无人值守地把线上告警变成可人审的修复 PR：OS 级沙箱、只读工具链、结构化证据链与有界重试。
     </td>
-    <td width="33%" valign="top">
+    <td width="50%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
       如何证明系统行为正确：YAML 数据驱动、接口与数据库双重校验、持续回归与 CI 闭环。
     </td>
@@ -54,57 +50,13 @@
 </table>
 
 ```text
-atlas-claw              →  企业 Agent 的统一入口、权限继承与可插拔集成
 MewCode                 →  告警进来、PR 出去：沙箱里的无人值守修复
 api-auto-test-framework →  用数据驱动与双重校验证明每一次接口行为
 ```
 
 ---
 
-## 01 / atlas-claw
-
-### [An enterprise Agent framework with a thin core](https://github.com/pretextQ/atlas-claw)
-
-> 让 Agent 以登录用户的身份、在企业权限体系内调用内部系统完成任务——而不是在平台层散落硬编码集成。
-
-| 项目形态 | 核心定位 | 当前状态 | Links |
-|---|---|---|---|
-| 企业级 AI Agent 框架 | 统一入口 · RBAC 继承 · 可插拔 Provider | v0.1.0-alpha · 活跃开发 | [Repository](https://github.com/pretextQ/atlas-claw) |
-
-atlas-claw 是面向企业场景的 AI Agent 框架：用一个统一对话入口打通 CRM、ITSM、监控、HR、财务、OA 等内部系统。平台层保持薄核心，只负责路由、鉴权与编排；具体系统接入全部做成可插拔 Provider。
-
-### 让 Agent 真正落进企业内网
-
-```text
-用户（企业账号 / JWT）
-      ↓
-FastAPI 服务层 ── 会话 · 审计 · Trace 落库
-      ↓
-Agent 编排（薄核心）
-      ↓
-可插拔 Provider
-      ↓
-CRM · ITSM · 监控 · HR · 财务 · OA
-```
-
-- **统一对话入口**：一个入口串联多个内部系统，用户不需要知道背后接了哪个 Provider。
-- **严格继承 RBAC 权限**：对话身份即系统身份，只读用户只能看见自己有权限的系统与数据。
-- **薄核心 + 可插拔 Provider**：新系统接入写成独立 Provider，内部直调既有接口，不在平台层堆积硬编码集成。
-- **内嵌 / 独立两种部署**：既可嵌进企业现有系统共享用户与组织架构，也可独立部署在内网自托管。
-- **可观测与可审计**：每次 Provider 调用的参数、耗时、状态码落库成 Trace，附审计报表、失败率与耗时分析。
-- **为测试而设计**：核心不绑定具体模型，CI 中以固定 Stub Provider 跑端到端回归。
-
-### 这个项目真正要解决的问题
-
-Agent 在企业里最常见的失败不是“不够聪明”，而是权限失控、集成散落、行为无法追溯。atlas-claw 把这三件事放在设计起点：让模型的每一次行动都在既有权限体系内、有 Trace 可查、可被报表统计。
-
-**Core Stack**
-
-`Python` `FastAPI` `SQLAlchemy` `JWT / RBAC` `SQLite / MySQL / PostgreSQL` `Docker Compose` `GitHub Actions`
-
----
-
-## 02 / MewCode
+## 01 / MewCode
 
 ### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
@@ -151,7 +103,7 @@ PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 
 ---
 
-## 03 / api-auto-test-framework
+## 02 / api-auto-test-framework
 
 ### [YAML-driven API testing with dual validation](https://github.com/pretextQ/api-auto-test-framework)
 
@@ -193,28 +145,26 @@ Docker 化执行 · GitHub Actions CI
 
 ---
 
-## 贯穿三个项目的工程原则
+## 贯穿两个项目的工程原则
 
 | 原则 | 我的工程取向 |
 |---|---|
-| **权限先行** | Agent 以登录用户身份行动，RBAC 决定能看见什么、调用什么，未授权的集成不进平台层。 |
+| **权限先行** | Agent 工具遵循权限分层与只读边界，修复在沙箱内执行，PR 经人工审核。 |
 | **Evidence before answers** | 回答要有依据、断言要有数据、发现要有证据，不输出无法回溯的结论。 |
-| **薄核心，可替换** | 框架、Agent 内核、测试都以薄核心组织，具体实现做成可插拔组件。 |
-| **可观测与可审计** | Trace、审计报表、Allure 报告先于功能堆叠，行为可回放、可统计。 |
-| **一切进 CI** | Stub 回归、pytest + ruff + mypy 检查、容器化执行都进 GitHub Actions，文档与代码同步演进。 |
+| **薄核心，可替换** | Agent 内核与测试都以薄核心组织，具体实现做成可插拔组件。 |
+| **可观测与可审计** | 运行指标、任务复盘、Allure 报告先于功能堆叠，行为可回放、可统计。 |
+| **一切进 CI** | 评估集回放、pytest + ruff + mypy 检查、容器化执行都进 GitHub Actions，文档与代码同步演进。 |
 
 ## 技术栈分层
 
 | Layer | Technologies | What I build |
 |---|---|---|
-| **Agent & Backend** | Python, FastAPI, SQLAlchemy, JWT / RBAC | 服务层、领域模型、权限继承与会话管理 |
 | **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 内核、权限分层、沙箱执行与告警服务化 |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | 接口回归、双重校验、静态类型与风格检查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飞书 | CI、环境编排、报告与结果通知 |
 
 ## 最近在做的事
 
-- 打磨 atlas-claw 的内嵌 / 独立双模式，扩充内部系统的 Provider 与审计报表
 - 打磨 MewCode 的沙箱 egress 白名单与告警触达，扩充评估集用例
 - 沉淀 api-auto-test-framework 的校验器与用例库
 

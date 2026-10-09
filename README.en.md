@@ -15,7 +15,7 @@
 <h3 align="center">I don't build chat demos — I build permission-controlled, verifiable systems that ship to enterprise production.</h3>
 
 <p align="center">
-  AI Agent Framework · Enterprise RBAC · Coding Agent & Alert Automation · API Test Automation · DevOps Engineering
+  Coding Agent & Alert Automation · API Test Automation · DevOps Engineering
 </p>
 
 <p align="center">
@@ -24,23 +24,19 @@
 
 ---
 
-## Three repos, one engineering chain
+## Two repos, from automated fixes to continuous verification
 
 I treat "can it ship to enterprise production" as the first metric of any system: the model is just the reasoning component — what actually decides success is the permission boundary, tool and context governance, verification tooling and observability.
 
-These three projects cover the full engineering chain I care about:
+These two projects focus on the automated fix and continuous verification chain I care about:
 
 <table>
   <tr>
-    <td width="33%" valign="top">
-      <strong>⚙️ Agent Framework</strong><br/><br/>
-      How an agent calls internal systems as the logged-in user, inside the enterprise permission model: unified entry point, RBAC inheritance, pluggable integrations, traces and audit.
-    </td>
-    <td width="33%" valign="top">
+    <td width="50%" valign="top">
       <strong>🧩 Coding Agent</strong><br/><br/>
       How an AI coding agent turns production alerts into reviewable fix PRs unattended: OS-level sandbox, read-only toolchain, structured evidence chains and bounded retries.
     </td>
-    <td width="33%" valign="top">
+    <td width="50%" valign="top">
       <strong>🛡️ Verification / Testing</strong><br/><br/>
       How to prove system behavior is correct: YAML data-driven cases, dual response/database validation, continuous regression and CI.
     </td>
@@ -48,57 +44,13 @@ These three projects cover the full engineering chain I care about:
 </table>
 
 ```text
-atlas-claw              →  unified entry point, permission inheritance, pluggable integrations
 MewCode                 →  alerts in, PRs out: unattended fixes in an OS sandbox
 api-auto-test-framework →  prove every API behavior with data-driven dual validation
 ```
 
 ---
 
-## 01 / atlas-claw
-
-### [An enterprise Agent framework with a thin core](https://github.com/pretextQ/atlas-claw)
-
-> Let the agent act as the logged-in user and call internal systems within the enterprise permission model — instead of scattering hardcoded integrations across the platform layer.
-
-| Form | Focus | Status | Links |
-|---|---|---|---|
-| Enterprise AI Agent framework | Unified entry · RBAC inheritance · Pluggable providers | v0.1.0-alpha · active | [Repository](https://github.com/pretextQ/atlas-claw) |
-
-atlas-claw is an AI Agent framework for enterprise scenarios: one unified conversational entry point across CRM, ITSM, monitoring, HR, finance and OA. The platform keeps a thin core — routing, auth and orchestration only; every integration is a pluggable provider.
-
-### Making the agent actually land inside the intranet
-
-```text
-User (enterprise account / JWT)
-      ↓
-FastAPI service layer ── session · audit · trace persistence
-      ↓
-Agent orchestration (thin core)
-      ↓
-Pluggable providers
-      ↓
-CRM · ITSM · Monitoring · HR · Finance · OA
-```
-
-- **Unified conversational entry point**: one entry across internal systems; users never need to know which provider is behind.
-- **Strict RBAC inheritance**: the conversation identity is the system identity — read-only users only see the systems and data they are allowed to.
-- **Thin core + pluggable providers**: new integrations are standalone providers calling existing APIs directly, no hardcoded glue in the platform layer.
-- **Embedded / standalone deployment**: embed into existing enterprise systems sharing users and org structure, or self-host standalone on the intranet.
-- **Observable and auditable**: every provider call — params, latency, status code — persisted as traces, with audit reports and failure/latency analysis.
-- **Designed for testing**: the core is not bound to any specific model; CI runs end-to-end regression against a fixed stub provider.
-
-### The questions I care about in this project
-
-The most common enterprise agent failures are not "not smart enough" — they are permission leaks, scattered integrations and untraceable behavior. atlas-claw puts all three at the design starting point: every model action stays inside the existing permission system, is traceable, and shows up in reports.
-
-**Core Stack**
-
-`Python` `FastAPI` `SQLAlchemy` `JWT / RBAC` `SQLite / MySQL / PostgreSQL` `Docker Compose` `GitHub Actions`
-
----
-
-## 02 / MewCode
+## 01 / MewCode
 
 ### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
@@ -145,7 +97,7 @@ The hard part of unattended coding is not fixing fast — it is what makes it tr
 
 ---
 
-## 03 / api-auto-test-framework
+## 02 / api-auto-test-framework
 
 ### [YAML-driven API testing with dual validation](https://github.com/pretextQ/api-auto-test-framework)
 
@@ -187,28 +139,26 @@ The value of automated testing is not how much it runs — it is whether failure
 
 ---
 
-## The method behind the three projects
+## The method behind the two projects
 
 | Principle | How I engineer |
 |---|---|
-| **Permissions first** | The agent acts as the logged-in user; RBAC decides what is visible and callable — unauthorized integrations never enter the platform layer. |
+| **Permissions first** | Agent tools follow permission layers and read-only boundaries; fixes run in sandboxes and PRs receive human review. |
 | **Evidence before answers** | Answers need grounding, assertions need data, findings need evidence — no conclusions that cannot be traced back. |
-| **Thin core, replaceable parts** | Framework, retrieval and testing are all organized around a thin core; implementations are pluggable components. |
-| **Observable and auditable** | Traces, audit reports and Allure reports come before feature piling — behavior can be replayed and measured. |
-| **Everything into CI** | Stub regression, pytest + ruff + mypy checks and containerized runs all live in GitHub Actions; docs evolve with code. |
+| **Thin core, replaceable parts** | The agent core and testing are organized around a thin core; implementations are pluggable components. |
+| **Observable and auditable** | Runtime metrics, job reports and Allure reports come before feature piling — behavior can be replayed and measured. |
+| **Everything into CI** | Evaluation replays, pytest + ruff + mypy checks and containerized runs all live in GitHub Actions; docs evolve with code. |
 
 ## Tech landscape
 
 | Layer | Technologies | What I build |
 |---|---|---|
-| **Agent & Backend** | Python, FastAPI, SQLAlchemy, JWT / RBAC | Service layer, domain models, permission inheritance, session management |
 | **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent loop, permission layering, sandboxed execution, alert-driven service mode |
 | **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | API regression, dual validation, static typing and lint checks |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, Feishu | CI, environment orchestration, reporting and notifications |
 
 ## Currently in progress
 
-- Refining atlas-claw's embedded / standalone modes, expanding providers and audit reports
 - Hardening MewCode's sandbox egress whitelist and growing the alert evaluation suite
 - Growing the validator and case library of api-auto-test-framework
 
