@@ -15,7 +15,7 @@
 <h3 align="center">我建構的不是「會跑的 Demo」，而是權限可控、結果可驗證、能落進企業生產環境的系統。</h3>
 
 <p align="center">
-  Coding Agent 與告警自動化 · Agent 評估與執行觀測 · 介面自動化測試 · DevOps 工程化
+  Coding Agent 與告警自動化 · Agent 評估與執行觀測 · 長期記憶與知識工作台 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -24,11 +24,11 @@
 
 ---
 
-## 三個儲存庫，從自動修復到 Agent 評估與介面驗證
+## 三個儲存庫，涵蓋 Agent 執行、評估與長期記憶
 
 我習慣把「能不能落進企業生產環境」當作系統的第一指標：模型只是其中的判斷元件，真正決定成敗的，是權限邊界、工具與上下文治理、驗證手段和可觀測性。
 
-這三個專案涵蓋自動修復、Agent 評估與介面驗證：
+這三個專案分別聚焦 Agent 自動修復、執行評估與長期記憶：
 
 <table>
   <tr>
@@ -41,8 +41,8 @@
       用外部測試集與自訂評分驗證 Agent，關聯執行軌跡、評分證據與版本迴歸報告。
     </td>
     <td width="33%" valign="top">
-      <strong>🛡️ Verification / Testing</strong><br/><br/>
-      如何證明系統行為正確：YAML 資料驅動、介面與資料庫雙重校驗、持續迴歸與 CI 閉環。
+      <strong>🧠 Memory / Knowledge</strong><br/><br/>
+      將筆記、文件與經歷沉澱為長期記憶，透過混合檢索、記憶治理與引用驗證保留回答依據。
     </td>
   </tr>
 </table>
@@ -50,7 +50,7 @@
 ```text
 MewCode                 →  告警進來、PR 出去：沙箱裡的無人值守修復
 eyes                    →  Agent 測試、執行觀測與有證據的迴歸比較
-api-auto-test-framework →  用資料驅動與雙重校驗證明每一次介面行為
+Reminder                →  長期記憶、混合檢索與可追溯的知識工作台
 ```
 
 ---
@@ -140,45 +140,39 @@ Web / CLI / API ── 迴歸報告 · CI 品質門檻
 
 ---
 
-## 03 / api-auto-test-framework
+## 03 / Reminder
 
-### [YAML-driven API testing with dual validation](https://github.com/pretextQ/api-auto-test-framework)
+### [The memory Agent at the heart of Mneme](https://github.com/pretextQ/Reminder)
 
-> 用 YAML 資料驅動 + 雙重校驗，把介面測試做成可以持續迴歸的工程資產，而不是一次性腳本。
+> 將筆記、文件與經歷沉澱為可檢索、可追溯、可持續演化的個人記憶。
 
-| 專案形態 | 資料驅動 | 校驗方式 | Links |
+| 專案形態 | 核心定位 | 目前狀態 | Links |
 |---|---|---|---|
-| 介面自動化測試框架 | YAML 用例 | JSONPath + SQL | [Repository](https://github.com/pretextQ/api-auto-test-framework) |
+| Mneme 記憶 Agent 與知識工作台 | 混合檢索 · 記憶治理 · 引用驗證 · 可恢復執行 | v0.1.0 · 線上回答統一經過 Reminder API | [Repository](https://github.com/pretextQ/Reminder) |
 
-基於 Pytest 的微服務介面自動化測試框架：克隆、裝依賴、`pytest` 三步跑通，不需要額外設定腳本。單 YAML 檔案即可覆蓋單介面冒煙、異常斷言與多步依賴鏈路。
+Reminder 負責檢索、記憶治理、回答生成與引用驗證；Mneme 提供知識庫、文件工作台、知識圖譜、個人畫像和成長分析。兩者擁有獨立資料庫，透過版本化 HTTP 契約通訊，明確資料所有權與服務邊界。
 
-### 把介面測試做成可迴歸的工程資產
+### 讓長期記憶有來源、有邊界
 
 ```text
-YAML 用例（單介面 / 異常 / 鏈路）
+Vue 知識工作台 → Mneme API
       ↓
-Pytest 執行引擎 + 上下文傳參（extract → 模板）
+Reminder API → BGE-M3 + PostgreSQL / pgvector
       ↓
-JSONPath 回應斷言  +  SQL 資料校驗
+記憶治理 · 回答生成 · 引用驗證
       ↓
-Allure 報告 · 飛書結果通知
-      ↓
-Docker 化執行 · GitHub Actions CI
+耐久 Agent Run · Outbox / Inbox · 可重建投影
 ```
 
-- **YAML 資料驅動**：用例即文件，單檔案覆蓋冒煙、異常與多步鏈路場景。
-- **鏈路上下文傳參**：extract 提取 + 參數模板，跨介面取數像讀句子一樣自然。
-- **JSONPath + SQL 雙重校驗**：介面回應與資料庫狀態同時斷言，防住「回傳 200 但資料沒落庫」這類問題。
-- **多環境切換**：conftest 管理環境組態，一套用例跑遍開發、測試、預發。
-- **結果工程閉環**：Allure 報告、飛書機器人通知、Docker 化執行、GitHub Actions CI 全部就位。
-
-### 這個專案真正要解決的問題
-
-自動化測試的價值不在跑得多，而在失敗時能否直接定位、成功時能否信任。回應與資料庫的雙重校驗、清晰的分層結構，讓每一次斷言都可解釋、可維護。
+- **混合檢索與證據引用**：融合語義向量、關鍵字與圖譜資訊，保留回答依據。
+- **記憶治理**：候選、人工治理、修訂歷史和證據關係共同維護長期記憶。
+- **可恢復執行**：耐久執行紀錄、租約和冪等語義處理重試及程序中斷。
+- **刪除與重建**：刪除 fence 防止舊事件恢復已刪資料，衍生狀態支援安全回填。
+- **交付閉環**：Vue 工作台、Compose 服務棧、GHCR 版本映像與 CI 評測一起維護。
 
 **Core Stack**
 
-`Python` `Pytest` `YAML` `JSONPath` `SQL` `Allure` `Docker` `GitHub Actions` `飛書`
+`Python 3.12` `FastAPI` `Vue 3` `TypeScript` `PostgreSQL / pgvector` `BGE-M3` `Neo4j` `Redis / Celery` `Docker Compose`
 
 ---
 
@@ -189,7 +183,7 @@ Docker 化執行 · GitHub Actions CI
 | **權限先行** | Agent 工具遵循權限分層與唯讀邊界，修復在沙箱內執行，PR 經人工審查。 |
 | **Evidence before answers** | 回答要有依據、斷言要有資料、發現要有證據，不輸出無法回溯的結論。 |
 | **薄核心，可替換** | Agent 核心與測試都以薄核心組織，具體實作做成可插拔元件。 |
-| **可觀測與可稽核** | 執行指標、任務複盤、Allure 報告先於功能堆疊，行為可重放、可統計。 |
+| **可觀測與可稽核** | 執行指標、任務複盤、評分證據與引用稽核先於功能堆疊，行為可重放、可統計。 |
 | **一切進 CI** | 評估集重放、pytest + ruff + mypy 檢查、容器化執行都進 GitHub Actions，文件與程式碼同步演進。 |
 
 ## 技術分層
@@ -198,20 +192,20 @@ Docker 化執行 · GitHub Actions CI
 |---|---|---|
 | **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 核心、權限分層、沙箱執行與告警服務化 |
 | **Agent Evaluation & Web** | Python, FastAPI, SQLAlchemy, PostgreSQL, OpenTelemetry, React, TypeScript | 服務控制面、獨立 Runner、執行軌跡、評分與迴歸報告 |
-| **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | 介面迴歸、雙重校驗、靜態型別與風格檢查 |
-| **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, 飛書 | CI、環境編排、報告與結果通知 |
+| **Memory & Knowledge** | Vue, FastAPI, PostgreSQL / pgvector, BGE-M3, Neo4j, Redis / Celery | 長期記憶、知識工作台、圖譜投影與可恢復非同步執行 |
+| **Testing & Quality** | Pytest, ruff, mypy, TypeScript | Agent 評測、迴歸驗證、靜態型別與風格檢查 |
+| **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, GHCR, Prometheus | CI、環境編排、版本映像、監控與維運 |
 
 ## 最近在做的事
 
 - 打磨 MewCode 的沙箱 egress 白名單與告警觸達，擴充評估集用例
-- 沉澱 api-auto-test-framework 的校驗器與用例庫
 
 ---
 
 <h3 align="center">Agents you can actually ship.</h3>
 
 <p align="center">
-  如果你也在做企業 Agent 落地、Coding Agent 原理實作或測試工程化，歡迎交流。
+  如果你也在做企業 Agent 落地、Coding Agent 原理實作、Agent 評估或長期記憶系統，歡迎交流。
 </p>
 
 <p align="center">

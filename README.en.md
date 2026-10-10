@@ -15,7 +15,7 @@
 <h3 align="center">I don't build chat demos — I build permission-controlled, verifiable systems that ship to enterprise production.</h3>
 
 <p align="center">
-  Coding Agent & Alert Automation · Agent Evaluation & Observation · API Test Automation · DevOps Engineering
+  Coding Agent & Alert Automation · Agent Evaluation & Observation · Long-term Memory & Knowledge Workspace · DevOps Engineering
 </p>
 
 <p align="center">
@@ -24,11 +24,11 @@
 
 ---
 
-## Three repos: automated fixes, agent evaluation and API verification
+## Three repos: agent execution, evaluation and long-term memory
 
 I treat "can it ship to enterprise production" as the first metric of any system: the model is just the reasoning component — what actually decides success is the permission boundary, tool and context governance, verification tooling and observability.
 
-These three projects cover automated fixes, agent evaluation and API verification:
+These three projects focus on automated agent fixes, execution evaluation and long-term memory:
 
 <table>
   <tr>
@@ -41,8 +41,8 @@ These three projects cover automated fixes, agent evaluation and API verificatio
       Evaluate agents with external datasets and custom scoring, connecting traces and evidence to versioned regression reports.
     </td>
     <td width="33%" valign="top">
-      <strong>🛡️ Verification / Testing</strong><br/><br/>
-      How to prove system behavior is correct: YAML data-driven cases, dual response/database validation, continuous regression and CI.
+      <strong>🧠 Memory / Knowledge</strong><br/><br/>
+      Build lasting memory from notes and documents with hybrid retrieval, memory governance and verifiable citations.
     </td>
   </tr>
 </table>
@@ -50,7 +50,7 @@ These three projects cover automated fixes, agent evaluation and API verificatio
 ```text
 MewCode                 →  alerts in, PRs out: unattended fixes in an OS sandbox
 eyes                    →  agent evaluation, execution observation and regression evidence
-api-auto-test-framework →  prove every API behavior with data-driven dual validation
+Reminder                →  long-term memory, hybrid retrieval and traceable knowledge
 ```
 
 ---
@@ -140,45 +140,39 @@ Web / CLI / API ── regression reports · CI gates
 
 ---
 
-## 03 / api-auto-test-framework
+## 03 / Reminder
 
-### [YAML-driven API testing with dual validation](https://github.com/pretextQ/api-auto-test-framework)
+### [The memory Agent at the heart of Mneme](https://github.com/pretextQ/Reminder)
 
-> YAML data-driven cases + dual validation turn API testing into a maintainable engineering asset — not one-off scripts.
+> Turn notes, documents and experiences into searchable, traceable personal memory.
 
-| Form | Data-driven | Validation | Links |
+| Form | Focus | Status | Links |
 |---|---|---|---|
-| API test automation framework | YAML cases | JSONPath + SQL | [Repository](https://github.com/pretextQ/api-auto-test-framework) |
+| Mneme memory agent and knowledge workspace | Retrieval · memory governance · citations · recovery | v0.1.0 · online answers routed through Reminder API | [Repository](https://github.com/pretextQ/Reminder) |
 
-A Pytest-based API test automation framework for microservices: clone, install dependencies, run `pytest` — three steps, no extra setup scripts. A single YAML file covers single-API smoke tests, exception assertions and multi-step dependency chains.
+Reminder handles retrieval, memory governance, answers and citation verification. Mneme supplies the workspace, knowledge graph, profiles and growth analysis. Separate databases and versioned HTTP contracts define their ownership boundaries.
 
-### Turning API tests into a regression-ready asset
+### Memory with evidence and clear boundaries
 
 ```text
-YAML cases (single API / exceptions / chains)
+Vue workspace → Mneme API
       ↓
-Pytest engine + chain context passing (extract → templates)
+Reminder API → BGE-M3 + PostgreSQL / pgvector
       ↓
-JSONPath response assertions  +  SQL data checks
+Memory governance · answers · citation verification
       ↓
-Allure reports · Feishu notifications
-      ↓
-Dockerized runs · GitHub Actions CI
+Durable Agent Run · Outbox / Inbox · rebuildable projections
 ```
 
-- **YAML data-driven**: cases read like documentation — smoke, exception and chain scenarios in one file.
-- **Chain context passing**: extract + parameter templates make cross-API data flow read like a sentence.
-- **JSONPath + SQL dual validation**: assert the response and the database state together, catching "200 OK but nothing persisted".
-- **Multi-environment switching**: conftest-managed configs — one suite runs against dev, staging and test environments.
-- **Closed engineering loop**: Allure reports, Feishu bot notifications, Dockerized runs and GitHub Actions CI.
-
-### The questions I care about in this project
-
-The value of automated testing is not how much it runs — it is whether failures pinpoint the cause and whether passes can be trusted. Dual validation and a clean layering make every assertion explainable and maintainable.
+- **Grounded retrieval**: combine vectors, keywords and graph information with answer evidence.
+- **Governed memory**: candidates, human review, revisions and evidence relationships.
+- **Recoverable runs**: durable records, leases and idempotency support retries and interruptions.
+- **Deletion boundaries**: deletion fences prevent stale events from restoring removed data.
+- **Delivery workflow**: workspace, Compose services, versioned GHCR images and CI evaluations.
 
 **Core Stack**
 
-`Python` `Pytest` `YAML` `JSONPath` `SQL` `Allure` `Docker` `GitHub Actions` `Feishu`
+`Python 3.12` `FastAPI` `Vue 3` `TypeScript` `PostgreSQL / pgvector` `BGE-M3` `Neo4j` `Redis / Celery` `Docker Compose`
 
 ---
 
@@ -189,7 +183,7 @@ The value of automated testing is not how much it runs — it is whether failure
 | **Permissions first** | Agent tools follow permission layers and read-only boundaries; fixes run in sandboxes and PRs receive human review. |
 | **Evidence before answers** | Answers need grounding, assertions need data, findings need evidence — no conclusions that cannot be traced back. |
 | **Thin core, replaceable parts** | The agent core and testing are organized around a thin core; implementations are pluggable components. |
-| **Observable and auditable** | Runtime metrics, job reports and Allure reports come before feature piling — behavior can be replayed and measured. |
+| **Observable and auditable** | Runtime metrics, job reports, scoring evidence and citation audits come before feature piling — behavior can be replayed and measured. |
 | **Everything into CI** | Evaluation replays, pytest + ruff + mypy checks and containerized runs all live in GitHub Actions; docs evolve with code. |
 
 ## Tech landscape
@@ -198,20 +192,20 @@ The value of automated testing is not how much it runs — it is whether failure
 |---|---|---|
 | **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent loop, permission layering, sandboxed execution, alert-driven service mode |
 | **Agent Evaluation & Web** | Python, FastAPI, SQLAlchemy, PostgreSQL, OpenTelemetry, React, TypeScript | Control plane, independent Runner, traces, scoring and regression reports |
-| **Testing & Quality** | Pytest, YAML, JSONPath, SQL, ruff, mypy | API regression, dual validation, static typing and lint checks |
-| **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, Allure, Feishu | CI, environment orchestration, reporting and notifications |
+| **Memory & Knowledge** | Vue, FastAPI, PostgreSQL / pgvector, BGE-M3, Neo4j, Redis / Celery | Long-term memory, knowledge workspace, graph projections and recoverable workflows |
+| **Testing & Quality** | Pytest, ruff, mypy, TypeScript | Agent evaluations, regression verification, static typing and lint checks |
+| **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, GHCR, Prometheus | CI, orchestration, versioned images, monitoring and operations |
 
 ## Currently in progress
 
 - Hardening MewCode's sandbox egress whitelist and growing the alert evaluation suite
-- Growing the validator and case library of api-auto-test-framework
 
 ---
 
 <h3 align="center">Agents you can actually ship.</h3>
 
 <p align="center">
-  If you are also working on enterprise agents, coding agent internals or test engineering — let's talk.
+  If you are also working on enterprise agents, coding agent internals, agent evaluation or long-term memory systems — let's talk.
 </p>
 
 <p align="center">
