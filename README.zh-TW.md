@@ -199,6 +199,8 @@ Reminder API → BGE-M3 + PostgreSQL / pgvector
 ## 最近在做的事
 
 - 打磨 MewCode 的沙箱 egress 白名單與告警觸達，擴充評估集用例
+- 完善 eyes 的真實 Agent 接入與迴歸證據，推進故障恢復、取消和容量驗收
+- 打磨 Reminder 的上下文治理與壓縮保護，完善長期記憶的證據追溯與迴歸評測
 
 ---
 

@@ -199,6 +199,8 @@ Durable Agent Run · Outbox / Inbox · rebuildable projections
 ## Currently in progress
 
 - Hardening MewCode's sandbox egress whitelist and growing the alert evaluation suite
+- Improving eyes' real-agent integrations and regression evidence, with recovery, cancellation and capacity acceptance checks
+- Refining Reminder's context governance and compaction safeguards, strengthening memory evidence traceability and regression evaluations
 
 ---
 
