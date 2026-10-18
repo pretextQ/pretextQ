@@ -65,7 +65,7 @@ Reminder                →  long-term memory, hybrid retrieval and traceable kn
 |---|---|---|---|
 | AI Coding Agent + alert-driven dev service | Alert → fix PR · OS-level sandbox · bounded retries | Human review is the only gate · no merge permission | [Repository](https://github.com/pretextQ/MewCode) |
 
-MewCode automates the on-call chain "alert arrives → locate → fix → verify → submit for review": Alertmanager webhooks trigger jobs, every job runs in its own sandbox and git worktree, and the PR body carries a structured evidence chain — alert summary, root cause, before/after test comparison, integration verification — so reviewers can judge without reading agent logs. A real-machine evaluation replay ran 6/6 jobs fully unattended: 100% fix-PR success rate, 25–26s median alert→PR.
+MewCode automates the on-call chain "alert arrives → locate → fix → verify → submit for review": Alertmanager webhooks trigger jobs, every job runs in its own sandbox and git worktree, and the PR body carries a structured evidence chain — alert summary, root cause, before/after test comparison, integration verification — so reviewers can judge without reading agent logs. The October 5, 2026 replay completed all six jobs across three demo bugs and two rounds unattended, with a 25–26s median alert→PR per round. This is a small-sample replay result, not a production success-rate guarantee.
 
 ### The unattended path from alert to PR
 
@@ -91,6 +91,7 @@ PR + CI gate ─▶ human review (the only release gate)
 - **Measurable operations**: /metrics (Prometheus), per-job JSON retrospectives, per-repo token costs; evaluation-set replay gives success-rate, MTTR and cost before/after numbers for every prompt or core change.
 - **Per-repo policy**: `.mewcode/policy.yaml` declares severity routing, target branch, token budget and notification channels — read per job, effective on save; broken policies fail fast instead of silently falling back.
 - **The interactive kernel is complete too**: tool set + permission pipeline (deny overrides allowlist) + skills and MCP extensions; Windows is a first-class platform.
+- **Service hardening**: authenticated operational and job endpoints, atomic alert deduplication, process-tree and container cleanup on cancellation, per-job test isolation and cumulative token budgets across retries. Fine-grained egress rules still require host network configuration; see the [trust model](https://github.com/pretextQ/MewCode#信任模型无人值守为什么可信).
 
 ### The questions I care about in this project
 
@@ -110,7 +111,7 @@ The hard part of unattended coding is not fixing fast — it is what makes it tr
 
 | Form | Focus | Status | Links |
 |---|---|---|---|
-| Self-hosted agent evaluation and observation platform | Concurrent experiments · scoring · traces · regression reports | Backend, Runner, SDK and console implemented; acceptance work remains | [Repository](https://github.com/pretextQ/eyes) |
+| Self-hosted agent evaluation and observation platform | Concurrent experiments · scoring · traces · regression reports | v0.1.0 · agreed scope delivered; on-demand use and maintenance | [Repository](https://github.com/pretextQ/eyes) |
 
 eyes connects versioned experiments to execution attempts, scores, traces and artifacts. It supports HTTP/Python integration, multi-agent batches and passive observation of local agent sessions.
 
@@ -132,7 +133,9 @@ Web / CLI / API ── regression reports · CI gates
 - **Visible observation gaps**: show collected calls and relationships alongside missing evidence.
 - **Comparable regressions**: pin configurations and flag dataset or scoring changes.
 - **Separate scoring**: independent execution and scoring, with cancellation, retries and retention controls.
-- **Explicit validation scope**: Deta/Zeta Python concurrency and cancellation validated; real HTTP agents, full Runner restart recovery and capacity acceptance remain pending.
+- **Real integrations and operations**: recorded MewCode Python/unified HTTP and independent trae HTTP runs, dual-agent concurrency and targeted recovery; trae passive observation, offline replay, lifecycle, capacity alerts and cancellation audits passed their agreed scopes.
+- **Reviewable maintenance**: October 17–18 contract/frontend fixes, Docker/Linux verification and unused CLI dependency cleanup; 43 API smoke checks passed and the clean-install full npm audit reported zero vulnerabilities. See the [maintenance record](https://github.com/pretextQ/eyes/blob/main/docs/dependency-fix-20261018.md).
+- **Explicit validation scope**: intended for one self-hosted team and on-demand use. Full fault matrices, long-term capacity and real-version improvements/regressions remain unaccepted. The first coding round passed two tasks and failed the order task; its later retry ended unknown without a valid quality score. See the [real evaluation record](https://github.com/pretextQ/eyes/blob/main/docs/coding-regression-real-acceptance-20261016.md).
 
 **Core Stack**
 
@@ -164,7 +167,8 @@ Memory governance · answers · citation verification
 Durable Agent Run · Outbox / Inbox · rebuildable projections
 ```
 
-- **Grounded retrieval**: combine vectors, keywords and graph information with answer evidence.
+- **Grounded retrieval**: combine vectors, keywords and graph information with answer evidence; added normalized backend-score fusion and optional BGE-M3 sparse document retrieval, retaining dense + keyword retrieval until sparse backfill is complete.
+- **Knowledge MCP connectors**: read-only listing, search and source retrieval for a configured Feishu wiki and Confluence Cloud space. See the [Feishu guide](https://github.com/pretextQ/Reminder/blob/master/docs/feishu-wiki-mcp.md) and [Confluence guide](https://github.com/pretextQ/Reminder/blob/master/docs/confluence-mcp.md).
 - **Governed memory**: candidates, human review, revisions and evidence relationships.
 - **Recoverable runs**: durable records, leases and idempotency support retries and interruptions.
 - **Deletion boundaries**: deletion fences prevent stale events from restoring removed data.
@@ -198,9 +202,11 @@ Durable Agent Run · Outbox / Inbox · rebuildable projections
 
 ## Currently in progress
 
-- Hardening MewCode's sandbox egress whitelist and growing the alert evaluation suite
-- Improving eyes' real-agent integrations and regression evidence, with recovery, cancellation and capacity acceptance checks
-- Refining Reminder's context governance and compaction safeguards, strengthening memory evidence traceability and regression evaluations
+Status checked October 18, 2026 against the three projects' default branches, READMEs and verification records.
+
+- MewCode: hardening authentication, job isolation, cancellation cleanup and cumulative budgets, with network-egress and small-sample evaluation limits still explicit
+- eyes: maintaining the delivered scope on demand, completing frontend dependency cleanup and Docker verification while preserving unresolved unknown recovery and coding-evaluation records
+- Reminder: advancing hybrid score fusion, BGE-M3 sparse retrieval and read-only Feishu / Confluence MCP integrations
 
 ---
 

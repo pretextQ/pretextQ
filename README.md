@@ -71,7 +71,7 @@ Reminder                →  长期记忆、混合检索与可追溯的知识工
 |---|---|---|---|
 | AI Coding Agent + 告警驱动的自动化开发服务 | 告警 → 修复 PR · OS 级沙箱 · 有界重试 | 人审 PR 唯一门禁 · 服务无 merge 权限 | [Repository](https://github.com/pretextQ/MewCode) |
 
-MewCode 把“收到告警 → 定位 → 修复 → 验证 → 提交 review”这条值班链路自动化：Alertmanager webhook 触发，每个 job 在独立沙箱与 git worktree 中执行，PR body 自带结构化证据链——告警摘要、根因、测试前后对比、集成验证——review 者不看 agent 日志也能做判断。真机评估集回放 6 单全部无人值守跑通：修复 PR 成功率 100%，告警→PR 中位 25–26 秒。
+MewCode 把“收到告警 → 定位 → 修复 → 验证 → 提交 review”这条值班链路自动化：Alertmanager webhook 触发，每个 job 在独立沙箱与 git worktree 中执行，PR body 自带结构化证据链——告警摘要、根因、测试前后对比、集成验证——review 者不看 agent 日志也能做判断。2026-10-05 的三类 demo bug、前后两轮共 6 单全部无人值守跑通，每轮告警→PR 中位 25–26 秒；这是小样本回放结果，非生产成功率承诺。
 
 ### 从告警到 PR 的无人值守链路
 
@@ -97,6 +97,7 @@ PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 - **运营可量化**：/metrics（Prometheus）、单 job JSON 复盘、按仓库 token 成本；评估集回放让每次提示词/内核改动都有成功率、MTTR 与成本的前后对比。
 - **多仓库策略**：`.mewcode/policy.yaml` 声明触发路由、目标分支、token 预算与通知渠道，按 job 现读、改文件即生效，损坏的策略快速失败而非静默回退。
 - **交互式内核同样完整**：工具集 + 权限分层管线（deny 优先于白名单）+ Skill 与 MCP 扩展，Windows 是一等公民平台。
+- **服务边界持续加固**：运维与任务端点鉴权、告警原子去重、取消时进程树与容器清理、按 job 隔离测试环境，以及跨重试累计 token 预算。细粒度 egress 白名单仍需宿主网络层配置，见[信任模型](https://github.com/pretextQ/MewCode#信任模型无人值守为什么可信)。
 
 ### 这个项目真正要解决的问题
 
@@ -116,7 +117,7 @@ PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 
 | 项目形态 | 核心定位 | 当前状态 | Links |
 |---|---|---|---|
-| 自托管 Agent 测试与执行观测平台 | 并发实验 · 自定义评分 · 执行证据 · 回归对比 | 控制后端、Runner、SDK 与 Web 控制台已实现；部分验收待完成 | [Repository](https://github.com/pretextQ/eyes) |
+| 自托管 Agent 测试与执行观测平台 | 并发实验 · 自定义评分 · 执行证据 · 回归对比 | v0.1.0 · 当前约定范围已交付，按需使用与维护 | [Repository](https://github.com/pretextQ/eyes) |
 
 eyes 将目标 Agent、测试集版本、评分器版本和执行配置绑定到实验，关联用例执行、评分记录、轨迹与产物。支持 HTTP/Python 接入、独立评分进程、多 Agent 批次和持久化回归报告，也可通过 SDK 直接观测本地 Agent 会话，无需先创建实验。
 
@@ -138,7 +139,9 @@ Web / CLI / API ── 回归报告 · CI 质量门槛
 - **执行过程可观测**：展示已采集的模型调用、工具执行和调用关系，明确采集覆盖范围与缺失状态。
 - **回归口径明确**：固定实验配置，按用例版本比较改善与退化，单独标记测试集或评分口径变化带来的不可比项。
 - **执行与评分分离**：独立 Runner 和评分进程，支持评分取消、重试及证据保留清理。
-- **验证边界透明**：已完成 Deta、Zeta 两个真实 Python Agent 的并发与取消验证；真实 HTTP Agent、Runner 整体重启恢复及容量验收仍待完成。
+- **真实接入与运维验收**：MewCode Python/统一 HTTP、独立 trae HTTP、双 Agent 并发与定向恢复已有记录；trae 被动观测、离线补传、生命周期、容量告警与取消审计通过各自约定范围。
+- **维护结果可复核**：10 月 17–18 日完成契约与前端修复、Docker/Linux 复验及未使用 CLI 依赖清理，43 项 API 冒烟通过；干净安装全量 npm 审计为 0，见[维护验证](https://github.com/pretextQ/eyes/blob/main/docs/dependency-fix-20261018.md)。
+- **验证边界透明**：当前面向单团队自托管、按需运行；完整故障矩阵、长期容量与真实版本改善/退化尚未验收。编码专项首轮两题通过、订单题失败，后续重试为 unknown，无有效质量评分，见[真实评测记录](https://github.com/pretextQ/eyes/blob/main/docs/coding-regression-real-acceptance-20261016.md)。
 
 **Core Stack**
 
@@ -170,7 +173,8 @@ Reminder API → BGE-M3 + PostgreSQL / pgvector
 耐久 Agent Run · Outbox / Inbox · 可重建投影
 ```
 
-- **混合检索与证据引用**：融合语义向量、关键词与图谱信息，保留回答依据。
+- **混合检索与证据引用**：融合语义向量、关键词与图谱信息，新增归一化后端分数融合与可选 BGE-M3 sparse 文档检索；稀疏向量未补齐时继续走 dense + keyword 路径。
+- **知识库 MCP 接入**：新增指定飞书知识库与 Confluence Cloud 空间的只读目录、搜索及原文读取，见[飞书说明](https://github.com/pretextQ/Reminder/blob/master/docs/feishu-wiki-mcp.md)与[Confluence 说明](https://github.com/pretextQ/Reminder/blob/master/docs/confluence-mcp.md)。
 - **记忆治理**：候选、人工治理、修订历史和证据关系共同维护长期记忆。
 - **可恢复执行**：耐久运行记录、租约和幂等语义处理重试及进程中断。
 - **删除与重建**：删除 fence 防止旧事件恢复已删数据，派生状态支持安全回填。
@@ -204,9 +208,11 @@ Reminder API → BGE-M3 + PostgreSQL / pgvector
 
 ## 最近在做的事
 
-- 打磨 MewCode 的沙箱 egress 白名单与告警触达，扩充评估集用例
-- 完善 eyes 的真实 Agent 接入与回归证据，推进故障恢复、取消和容量验收
-- 打磨 Reminder 的上下文治理与压缩保护，完善长期记忆的证据追溯与回归评测
+状态核对：2026-10-18，依据三个项目的默认分支、README 与专项验证记录。
+
+- MewCode：加固鉴权、任务隔离、取消清理与累计预算；继续保留网络出口限制和小样本评估边界
+- eyes：当前约定范围交付后按需维护，完成前端依赖清理与 Docker 复验，保留 unknown 恢复和编码专项的未通过记录
+- Reminder：推进混合检索分数融合、BGE-M3 sparse 检索与飞书 / Confluence 只读 MCP 接入
 
 ---
 
