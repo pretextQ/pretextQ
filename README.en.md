@@ -15,7 +15,7 @@
 <h3 align="center">I don't build chat demos — I build permission-controlled, verifiable systems that ship to enterprise production.</h3>
 
 <p align="center">
-  Coding Agent & Alert Automation · Agent Evaluation & Observation · Long-term Memory & Knowledge Workspace · DevOps Engineering
+  Agent Evaluation & Observation · Coding Agent & Alert Automation · Long-term Memory & Knowledge Workspace · DevOps Engineering
 </p>
 
 <p align="center">
@@ -24,21 +24,21 @@
 
 ---
 
-## Three repos: agent execution, evaluation and long-term memory
+## Three repos: agent evaluation, execution and long-term memory
 
 I treat "can it ship to enterprise production" as the first metric of any system: the model is just the reasoning component — what actually decides success is the permission boundary, tool and context governance, verification tooling and observability.
 
-These three projects focus on automated agent fixes, execution evaluation and long-term memory:
+These three projects focus on agent execution evaluation, automated fixes and long-term memory:
 
 <table>
   <tr>
     <td width="33%" valign="top">
-      <strong>🧩 Coding Agent</strong><br/><br/>
-      How an AI coding agent turns production alerts into reviewable fix PRs unattended: OS-level sandbox, read-only toolchain, structured evidence chains and bounded retries.
-    </td>
-    <td width="33%" valign="top">
       <strong>👁️ Agent Evaluation / Observation</strong><br/><br/>
       Evaluate agents with external datasets and custom scoring, connecting traces and evidence to versioned regression reports.
+    </td>
+    <td width="33%" valign="top">
+      <strong>🧩 Coding Agent</strong><br/><br/>
+      How an AI coding agent turns production alerts into reviewable fix PRs unattended: OS-level sandbox, read-only toolchain, structured evidence chains and bounded retries.
     </td>
     <td width="33%" valign="top">
       <strong>🧠 Memory / Knowledge</strong><br/><br/>
@@ -48,14 +48,54 @@ These three projects focus on automated agent fixes, execution evaluation and lo
 </table>
 
 ```text
-MewCode                 →  alerts in, PRs out: unattended fixes in an OS sandbox
 eyes                    →  agent evaluation, execution observation and regression evidence
+MewCode                 →  alerts in, PRs out: unattended fixes in an OS sandbox
 Reminder                →  long-term memory, hybrid retrieval and traceable knowledge
 ```
 
 ---
 
-## 01 / MewCode
+## 01 / eyes
+
+### [Agent evaluation and execution observation](https://github.com/pretextQ/eyes)
+
+> Evaluate agent changes with external datasets, custom scoring and execution evidence.
+
+| Form | Focus | Status | Links |
+|---|---|---|---|
+| Self-hosted agent evaluation and observation platform | Concurrent experiments · scoring · traces · regression reports | v0.1.0 · agreed scope delivered; on-demand use and maintenance | [Repository](https://github.com/pretextQ/eyes) |
+
+eyes connects versioned experiments to execution attempts, scores, traces and artifacts. It supports HTTP/Python integration, multi-agent batches and passive observation of local agent sessions.
+
+### From execution to regression evidence
+
+```text
+Agent + JSONL dataset + custom scorer
+      ↓
+Control backend / scheduler ── versions · concurrency limits
+      ↓
+Independent Runner ── attempts · traces · artifacts
+      ↓
+Scoring process ── decisions · reasons · evidence references
+      ↓
+Web / CLI / API ── regression reports · CI gates
+```
+
+- **Traceable scores**: link decisions to attempts, scoring rules and evidence.
+- **Visible observation gaps**: show collected calls and relationships alongside missing evidence.
+- **Comparable regressions**: pin configurations and flag dataset or scoring changes.
+- **Separate scoring**: independent execution and scoring, with cancellation, retries and retention controls.
+- **Real integrations and operations**: recorded MewCode Python/unified HTTP and independent trae HTTP runs, dual-agent concurrency and targeted recovery; trae passive observation, offline replay, lifecycle, capacity alerts and cancellation audits passed their agreed scopes.
+- **Security and resource hardening**: October 22 fixes cover secret references, explicit opt-in for remote cleartext control, cancellation dispatch races, event/detail limits, evidence restoration and local retention. Static checks, offline migration SQL, wheel and Web builds passed; real concurrency, cancellation, quota and recovery checks still need runtime verification for this round. See the [maintenance record](https://github.com/pretextQ/eyes/blob/main/docs/Review/2026-10-22-remediation.md).
+- **Explicit validation scope**: intended for one self-hosted team and on-demand use. Full fault matrices, long-term capacity and real-version improvements/regressions remain unaccepted. The first coding round passed two tasks and failed the order task; its later retry ended unknown without a valid quality score. See the [real evaluation record](https://github.com/pretextQ/eyes/blob/main/docs/coding-regression-real-acceptance-20261016.md).
+
+**Core Stack**
+
+`Python 3.14` `FastAPI` `SQLAlchemy` `PostgreSQL` `OpenTelemetry` `React` `TypeScript` `Vite`
+
+---
+
+## 02 / MewCode
 
 ### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
@@ -91,6 +131,8 @@ PR + CI gate ─▶ human review (the only release gate)
 - **Measurable operations**: /metrics (Prometheus), per-job JSON retrospectives, per-repo token costs; evaluation-set replay gives success-rate, MTTR and cost before/after numbers for every prompt or core change.
 - **Per-repo policy**: `.mewcode/policy.yaml` declares severity routing, target branch, token budget and notification channels — read per job, effective on save; broken policies fail fast instead of silently falling back.
 - **The interactive kernel is complete too**: tool set + permission pipeline (deny overrides allowlist) + skills and MCP extensions; Windows is a first-class platform.
+- **Human review loop**: an authenticated decision API records merged, changes-requested or escalated outcomes; change requests requeue the job, and pending reviews with an existing PR keep deduplicating alerts. The service does not merge remotely.
+- **v0.3.0 maintenance verification**: October 24 fixes cover permissions, recovery, context, cleanup and CI gates. The record reports 1363 pytest passes / 18 skips and four Windows/Linux CI combinations passing. Real Docker isolation and model runs were not executed in this round; see the [handoff](https://github.com/pretextQ/MewCode/blob/master/guides/maintenance.md).
 - **Service hardening**: authenticated operational and job endpoints, atomic alert deduplication, process-tree and container cleanup on cancellation, per-job test isolation and cumulative token budgets across retries. Fine-grained egress rules still require host network configuration; see the [trust model](https://github.com/pretextQ/MewCode#信任模型无人值守为什么可信).
 
 ### The questions I care about in this project
@@ -100,46 +142,6 @@ The hard part of unattended coding is not fixing fast — it is what makes it tr
 **Core Stack**
 
 `Python 3.11` `Textual` `asyncio` `Docker sandbox` `MCP` `Prometheus` `SQLite` `GitHub Actions`
-
----
-
-## 02 / eyes
-
-### [Agent evaluation and execution observation](https://github.com/pretextQ/eyes)
-
-> Evaluate agent changes with external datasets, custom scoring and execution evidence.
-
-| Form | Focus | Status | Links |
-|---|---|---|---|
-| Self-hosted agent evaluation and observation platform | Concurrent experiments · scoring · traces · regression reports | v0.1.0 · agreed scope delivered; on-demand use and maintenance | [Repository](https://github.com/pretextQ/eyes) |
-
-eyes connects versioned experiments to execution attempts, scores, traces and artifacts. It supports HTTP/Python integration, multi-agent batches and passive observation of local agent sessions.
-
-### From execution to regression evidence
-
-```text
-Agent + JSONL dataset + custom scorer
-      ↓
-Control backend / scheduler ── versions · concurrency limits
-      ↓
-Independent Runner ── attempts · traces · artifacts
-      ↓
-Scoring process ── decisions · reasons · evidence references
-      ↓
-Web / CLI / API ── regression reports · CI gates
-```
-
-- **Traceable scores**: link decisions to attempts, scoring rules and evidence.
-- **Visible observation gaps**: show collected calls and relationships alongside missing evidence.
-- **Comparable regressions**: pin configurations and flag dataset or scoring changes.
-- **Separate scoring**: independent execution and scoring, with cancellation, retries and retention controls.
-- **Real integrations and operations**: recorded MewCode Python/unified HTTP and independent trae HTTP runs, dual-agent concurrency and targeted recovery; trae passive observation, offline replay, lifecycle, capacity alerts and cancellation audits passed their agreed scopes.
-- **Reviewable maintenance**: October 17–18 contract/frontend fixes, Docker/Linux verification and unused CLI dependency cleanup; 43 API smoke checks passed and the clean-install full npm audit reported zero vulnerabilities. See the [maintenance record](https://github.com/pretextQ/eyes/blob/main/docs/dependency-fix-20261018.md).
-- **Explicit validation scope**: intended for one self-hosted team and on-demand use. Full fault matrices, long-term capacity and real-version improvements/regressions remain unaccepted. The first coding round passed two tasks and failed the order task; its later retry ended unknown without a valid quality score. See the [real evaluation record](https://github.com/pretextQ/eyes/blob/main/docs/coding-regression-real-acceptance-20261016.md).
-
-**Core Stack**
-
-`Python 3.14` `FastAPI` `SQLAlchemy` `PostgreSQL` `OpenTelemetry` `React` `TypeScript` `Vite`
 
 ---
 
@@ -194,18 +196,18 @@ Durable Agent Run · Outbox / Inbox · rebuildable projections
 
 | Layer | Technologies | What I build |
 |---|---|---|
-| **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent loop, permission layering, sandboxed execution, alert-driven service mode |
 | **Agent Evaluation & Web** | Python, FastAPI, SQLAlchemy, PostgreSQL, OpenTelemetry, React, TypeScript | Control plane, independent Runner, traces, scoring and regression reports |
+| **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent loop, permission layering, sandboxed execution, alert-driven service mode |
 | **Memory & Knowledge** | Vue, FastAPI, PostgreSQL / pgvector, BGE-M3, Neo4j, Redis / Celery | Long-term memory, knowledge workspace, graph projections and recoverable workflows |
 | **Testing & Quality** | Pytest, ruff, mypy, TypeScript | Agent evaluations, regression verification, static typing and lint checks |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, GHCR, Prometheus | CI, orchestration, versioned images, monitoring and operations |
 
 ## Currently in progress
 
-Status checked October 18, 2026 against the three projects' default branches, READMEs and verification records.
+Status checked October 25, 2026 against the three projects' default branches, READMEs and verification records.
 
-- MewCode: hardening authentication, job isolation, cancellation cleanup and cumulative budgets, with network-egress and small-sample evaluation limits still explicit
-- eyes: maintaining the delivered scope on demand, completing frontend dependency cleanup and Docker verification while preserving unresolved unknown recovery and coding-evaluation records
+- eyes: security and resource fixes completed; the [design backlog](https://github.com/pretextQ/eyes/blob/main/docs/TODO.md) plans checks of status wording, the two usage paths, review workflows and graph interactions; these remain planned work
+- MewCode: v0.3.0 review fixes and dependency maintenance completed; [independent fix review, diff coverage records and GitHub review feedback](https://github.com/pretextQ/MewCode/blob/master/docs/evolution/05-pr-review-improvements.md) remain planned
 - Reminder: advancing hybrid score fusion, BGE-M3 sparse retrieval and read-only Feishu / Confluence MCP integrations
 
 ---

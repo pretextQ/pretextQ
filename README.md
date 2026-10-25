@@ -15,7 +15,7 @@
 <h3 align="center">我构建的不是“会跑的 Demo”，而是权限可控、结果可验证、能落进企业生产环境的系统。</h3>
 
 <p align="center">
-  Coding Agent 与告警自动化 · Agent 评估与执行观测 · 长期记忆与知识工作台 · DevOps 工程化
+  Agent 评估与执行观测 · Coding Agent 与告警自动化 · 长期记忆与知识工作台 · DevOps 工程化
 </p>
 
 <p align="center">
@@ -30,21 +30,21 @@
 
 ---
 
-## 三个仓库，覆盖 Agent 执行、评估与长期记忆
+## 三个仓库，覆盖 Agent 评估、执行与长期记忆
 
 我习惯把“能不能落进企业生产环境”当作系统的第一指标：模型只是其中的判断组件，真正决定成败的，是权限边界、工具与上下文治理、验证手段和可观测性。
 
-这三个项目分别聚焦 Agent 自动修复、执行评估与长期记忆：
+这三个项目分别聚焦 Agent 执行评估、自动修复与长期记忆：
 
 <table>
   <tr>
     <td width="33%" valign="top">
-      <strong>🧩 Coding Agent</strong><br/><br/>
-      AI Coding Agent 如何无人值守地把线上告警变成可人审的修复 PR：OS 级沙箱、只读工具链、结构化证据链与有界重试。
-    </td>
-    <td width="33%" valign="top">
       <strong>👁️ Agent Evaluation / Observation</strong><br/><br/>
       用外部测试集与自定义评分验证 Agent，关联执行轨迹、评分证据与版本回归报告。
+    </td>
+    <td width="33%" valign="top">
+      <strong>🧩 Coding Agent</strong><br/><br/>
+      AI Coding Agent 如何无人值守地把线上告警变成可人审的修复 PR：OS 级沙箱、只读工具链、结构化证据链与有界重试。
     </td>
     <td width="33%" valign="top">
       <strong>🧠 Memory / Knowledge</strong><br/><br/>
@@ -54,14 +54,54 @@
 </table>
 
 ```text
-MewCode                 →  告警进来、PR 出去：沙箱里的无人值守修复
 eyes                    →  Agent 测试、执行观测与有证据的回归对比
+MewCode                 →  告警进来、PR 出去：沙箱里的无人值守修复
 Reminder                →  长期记忆、混合检索与可追溯的知识工作台
 ```
 
 ---
 
-## 01 / MewCode
+## 01 / eyes
+
+### [Agent evaluation and execution observation](https://github.com/pretextQ/eyes)
+
+> 用外部测试集、自定义评分与执行证据，验证 Agent 修改是否有效，并看清每次任务如何执行。
+
+| 项目形态 | 核心定位 | 当前状态 | Links |
+|---|---|---|---|
+| 自托管 Agent 测试与执行观测平台 | 并发实验 · 自定义评分 · 执行证据 · 回归对比 | v0.1.0 · 当前约定范围已交付，按需使用与维护 | [Repository](https://github.com/pretextQ/eyes) |
+
+eyes 将目标 Agent、测试集版本、评分器版本和执行配置绑定到实验，关联用例执行、评分记录、轨迹与产物。支持 HTTP/Python 接入、独立评分进程、多 Agent 批次和持久化回归报告，也可通过 SDK 直接观测本地 Agent 会话，无需先创建实验。
+
+### 从执行过程到回归证据
+
+```text
+目标 Agent + JSONL 测试集 + 自定义评分器
+      ↓
+控制后端与调度器 ── 固定版本 · 并发限制
+      ↓
+独立 Runner ── 执行尝试 · 轨迹 · 产物
+      ↓
+独立评分进程 ── 判定 · 理由 · 证据引用
+      ↓
+Web / CLI / API ── 回归报告 · CI 质量门槛
+```
+
+- **评分可追溯**：结论关联用例、执行尝试、评分口径和实际证据，区分执行失败、评分失败与证据不足。
+- **执行过程可观测**：展示已采集的模型调用、工具执行和调用关系，明确采集覆盖范围与缺失状态。
+- **回归口径明确**：固定实验配置，按用例版本比较改善与退化，单独标记测试集或评分口径变化带来的不可比项。
+- **执行与评分分离**：独立 Runner 和评分进程，支持评分取消、重试及证据保留清理。
+- **真实接入与运维验收**：MewCode Python/统一 HTTP、独立 trae HTTP、双 Agent 并发与定向恢复已有记录；trae 被动观测、离线补传、生命周期、容量告警与取消审计通过各自约定范围。
+- **安全与资源边界加固**：10 月 22 日完成密钥引用校验、远程明文控制连接显式授权、取消派发竞态、事件与详情限额、证据恢复及本地保留清理等修复。静态检查、离线迁移 SQL、wheel 与 Web 构建通过；本轮真实并发、取消、配额与恢复仍待运行复验，见[维护记录](https://github.com/pretextQ/eyes/blob/main/docs/Review/2026-10-22-remediation.md)。
+- **验证边界透明**：当前面向单团队自托管、按需运行；完整故障矩阵、长期容量与真实版本改善/退化尚未验收。编码专项首轮两题通过、订单题失败，后续重试为 unknown，无有效质量评分，见[真实评测记录](https://github.com/pretextQ/eyes/blob/main/docs/coding-regression-real-acceptance-20261016.md)。
+
+**Core Stack**
+
+`Python 3.14` `FastAPI` `SQLAlchemy` `PostgreSQL` `OpenTelemetry` `React` `TypeScript` `Vite`
+
+---
+
+## 02 / MewCode
 
 ### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
@@ -97,6 +137,8 @@ PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 - **运营可量化**：/metrics（Prometheus）、单 job JSON 复盘、按仓库 token 成本；评估集回放让每次提示词/内核改动都有成功率、MTTR 与成本的前后对比。
 - **多仓库策略**：`.mewcode/policy.yaml` 声明触发路由、目标分支、token 预算与通知渠道，按 job 现读、改文件即生效，损坏的策略快速失败而非静默回退。
 - **交互式内核同样完整**：工具集 + 权限分层管线（deny 优先于白名单）+ Skill 与 MCP 扩展，Windows 是一等公民平台。
+- **人工审查闭环**：鉴权决策接口记录合并、要求修改或升级；修改意见重新入队，等待审查且已有 PR 的任务继续合并重复告警，服务不执行远端合并。
+- **v0.3.0 维护验证**：10 月 24 日修复覆盖权限、恢复、上下文、资源清理与 CI 门禁；记录中的 pytest 为 1363 passed / 18 skipped，Windows/Linux 四组 CI 通过。本轮真实 Docker 隔离与模型运行未执行，见[维护交接](https://github.com/pretextQ/MewCode/blob/master/guides/maintenance.md)。
 - **服务边界持续加固**：运维与任务端点鉴权、告警原子去重、取消时进程树与容器清理、按 job 隔离测试环境，以及跨重试累计 token 预算。细粒度 egress 白名单仍需宿主网络层配置，见[信任模型](https://github.com/pretextQ/MewCode#信任模型无人值守为什么可信)。
 
 ### 这个项目真正要解决的问题
@@ -106,46 +148,6 @@ PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 **Core Stack**
 
 `Python 3.11` `Textual` `asyncio` `Docker 沙箱` `MCP` `Prometheus` `SQLite` `GitHub Actions`
-
----
-
-## 02 / eyes
-
-### [Agent evaluation and execution observation](https://github.com/pretextQ/eyes)
-
-> 用外部测试集、自定义评分与执行证据，验证 Agent 修改是否有效，并看清每次任务如何执行。
-
-| 项目形态 | 核心定位 | 当前状态 | Links |
-|---|---|---|---|
-| 自托管 Agent 测试与执行观测平台 | 并发实验 · 自定义评分 · 执行证据 · 回归对比 | v0.1.0 · 当前约定范围已交付，按需使用与维护 | [Repository](https://github.com/pretextQ/eyes) |
-
-eyes 将目标 Agent、测试集版本、评分器版本和执行配置绑定到实验，关联用例执行、评分记录、轨迹与产物。支持 HTTP/Python 接入、独立评分进程、多 Agent 批次和持久化回归报告，也可通过 SDK 直接观测本地 Agent 会话，无需先创建实验。
-
-### 从执行过程到回归证据
-
-```text
-目标 Agent + JSONL 测试集 + 自定义评分器
-      ↓
-控制后端与调度器 ── 固定版本 · 并发限制
-      ↓
-独立 Runner ── 执行尝试 · 轨迹 · 产物
-      ↓
-独立评分进程 ── 判定 · 理由 · 证据引用
-      ↓
-Web / CLI / API ── 回归报告 · CI 质量门槛
-```
-
-- **评分可追溯**：结论关联用例、执行尝试、评分口径和实际证据，区分执行失败、评分失败与证据不足。
-- **执行过程可观测**：展示已采集的模型调用、工具执行和调用关系，明确采集覆盖范围与缺失状态。
-- **回归口径明确**：固定实验配置，按用例版本比较改善与退化，单独标记测试集或评分口径变化带来的不可比项。
-- **执行与评分分离**：独立 Runner 和评分进程，支持评分取消、重试及证据保留清理。
-- **真实接入与运维验收**：MewCode Python/统一 HTTP、独立 trae HTTP、双 Agent 并发与定向恢复已有记录；trae 被动观测、离线补传、生命周期、容量告警与取消审计通过各自约定范围。
-- **维护结果可复核**：10 月 17–18 日完成契约与前端修复、Docker/Linux 复验及未使用 CLI 依赖清理，43 项 API 冒烟通过；干净安装全量 npm 审计为 0，见[维护验证](https://github.com/pretextQ/eyes/blob/main/docs/dependency-fix-20261018.md)。
-- **验证边界透明**：当前面向单团队自托管、按需运行；完整故障矩阵、长期容量与真实版本改善/退化尚未验收。编码专项首轮两题通过、订单题失败，后续重试为 unknown，无有效质量评分，见[真实评测记录](https://github.com/pretextQ/eyes/blob/main/docs/coding-regression-real-acceptance-20261016.md)。
-
-**Core Stack**
-
-`Python 3.14` `FastAPI` `SQLAlchemy` `PostgreSQL` `OpenTelemetry` `React` `TypeScript` `Vite`
 
 ---
 
@@ -200,18 +202,18 @@ Reminder API → BGE-M3 + PostgreSQL / pgvector
 
 | Layer | Technologies | What I build |
 |---|---|---|
-| **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 内核、权限分层、沙箱执行与告警服务化 |
 | **Agent Evaluation & Web** | Python, FastAPI, SQLAlchemy, PostgreSQL, OpenTelemetry, React, TypeScript | 服务控制面、独立 Runner、执行轨迹、评分与回归报告 |
+| **Agent Internals** | Textual, asyncio, MCP, Docker, Prometheus | Agent 内核、权限分层、沙箱执行与告警服务化 |
 | **Memory & Knowledge** | Vue, FastAPI, PostgreSQL / pgvector, BGE-M3, Neo4j, Redis / Celery | 长期记忆、知识工作台、图谱投影与可恢复异步执行 |
 | **Testing & Quality** | Pytest, ruff, mypy, TypeScript | Agent 评测、回归验证、静态类型与风格检查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, GHCR, Prometheus | CI、环境编排、版本镜像、监控与运维 |
 
 ## 最近在做的事
 
-状态核对：2026-10-18，依据三个项目的默认分支、README 与专项验证记录。
+状态核对：2026-10-25，依据三个项目的默认分支、README 与专项验证记录。
 
-- MewCode：加固鉴权、任务隔离、取消清理与累计预算；继续保留网络出口限制和小样本评估边界
-- eyes：当前约定范围交付后按需维护，完成前端依赖清理与 Docker 复验，保留 unknown 恢复和编码专项的未通过记录
+- eyes：完成安全与资源边界修复；下一步按[设计优化待办](https://github.com/pretextQ/eyes/blob/main/docs/TODO.md)核对状态表达、双路径引导、审阅工作区和流程图体验，计划不计为已实现
+- MewCode：v0.3.0 完成审查修复与依赖维护；[独立修复审查、diff 覆盖记录和 GitHub 评审反馈](https://github.com/pretextQ/MewCode/blob/master/docs/evolution/05-pr-review-improvements.md)仍为待实施计划
 - Reminder：推进混合检索分数融合、BGE-M3 sparse 检索与飞书 / Confluence 只读 MCP 接入
 
 ---
