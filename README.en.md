@@ -204,14 +204,6 @@ Durable Agent Run · Outbox / Inbox · rebuildable projections
 | **Testing & Quality** | Pytest, ruff, mypy, TypeScript | Agent evaluations, regression verification, static typing and lint checks |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, GHCR, Prometheus | CI, orchestration, versioned images, monitoring and operations |
 
-## Currently in progress
-
-Status checked November 1, 2026 (Asia/Shanghai) against the three projects' default branches, READMEs and verification records. Baselines: eyes `c94d500`, MewCode `cc98162`, Reminder `9f1d5e8`.
-
-- eyes: security and resource fixes completed; the [design backlog](https://github.com/pretextQ/eyes/blob/main/docs/TODO.md) plans checks of status wording, the two usage paths, review workflows and graph interactions; these remain planned work
-- MewCode: independent fix review, supervision with iteration-budget warnings, notification Outbox, policy revalidation on recovery and dead-end failure feedback are delivered; review and supervision remain disabled by default. Self-verify, GitHub comment/review ingestion, observe mode and a durable PR publication queue remain pending; see [current status and next steps](https://github.com/pretextQ/MewCode/blob/master/docs/README.md)
-- Reminder: retains hybrid score fusion, optional BGE-M3 sparse retrieval and read-only Feishu / Confluence MCP integrations; the latest default-branch commit is still October 10, with no new delivery found in this check
-
 ---
 
 <h3 align="center">Agents you can actually ship.</h3>

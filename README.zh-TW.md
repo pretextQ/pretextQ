@@ -204,14 +204,6 @@ Reminder API → BGE-M3 + PostgreSQL / pgvector
 | **Testing & Quality** | Pytest, ruff, mypy, TypeScript | Agent 評測、迴歸驗證、靜態型別與風格檢查 |
 | **Delivery & Ops** | Docker, Docker Compose, GitHub Actions, GHCR, Prometheus | CI、環境編排、版本映像、監控與維運 |
 
-## 最近在做的事
-
-狀態核對：2026-11-01（Asia/Shanghai），依據三個專案的預設分支、README 與專項驗證紀錄。核對基線：eyes `c94d500`、MewCode `cc98162`、Reminder `9f1d5e8`。
-
-- eyes：完成安全與資源邊界修復；下一步按[設計優化待辦](https://github.com/pretextQ/eyes/blob/main/docs/TODO.md)核對狀態表達、雙路徑引導、審閱工作區和流程圖體驗，計畫不計為已實作
-- MewCode：已交付獨立修復審查、監督核心與循環預算預警、通知 Outbox、策略恢復重新驗證和 dead-end 失敗回饋；審查與監督預設關閉，self-verify、GitHub 留言/評審接入、observe 與 PR 發布持久化佇列仍待實施，見[目前狀態與後續入口](https://github.com/pretextQ/MewCode/blob/master/docs/README.md)
-- Reminder：保留混合檢索分數融合、可選 BGE-M3 sparse 檢索與飛書 / Confluence 唯讀 MCP 接入；預設分支最新提交仍為 10 月 10 日，本次未發現新增交付
-
 ---
 
 <h3 align="center">Agents you can actually ship.</h3>
