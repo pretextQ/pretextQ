@@ -8,37 +8,31 @@ Building verifiable, observable Agent systems with explicit permission boundarie
 
 <table width="100%">
 <tr><td width="9999">
-<h3><img src="./assets/eyes.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/eyes">eyes</a></h3>
+<h3><picture><source media="(max-width: 600px)" srcset="./assets/flow-spacer.svg" /><img align="right" width="38%" src="./assets/flow-eyes.svg" alt="Dataset to Agent to scoring, linked to evidence and regression reports" /></picture><img src="./assets/eyes.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/eyes">eyes</a></h3>
 <p><strong>Agent evaluation and execution observation</strong><br/>
-Evaluate Agent changes with your own datasets, scoring rules and execution evidence.</p>
-<p>Versioned experiments · Independent scoring · Traces · Regression reports<br/>
-<sub>Python / FastAPI / React / PostgreSQL</sub></p>
-<p><a href="https://github.com/pretextQ/eyes">Repository</a> · <a href="https://github.com/pretextQ/eyes#两条使用路径">Integration &amp; usage</a><br/>
-<sub>v0.1.0 · Self-hosted for a single team; on-demand use and maintenance</sub></p>
+Self-hosted evaluation and observation, backed by scores and execution evidence.<br/>
+<sub>v0.1.0 · Python / FastAPI / React / PostgreSQL</sub><br/>
+<a href="https://github.com/pretextQ/eyes">Repository</a> · <a href="https://github.com/pretextQ/eyes#两条使用路径">Integration &amp; usage</a></p>
 </td></tr>
 </table>
 
 <table width="100%">
 <tr><td width="9999">
-<h3><img src="./assets/mewcode.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/MewCode">MewCode</a></h3>
+<h3><picture><source media="(max-width: 600px)" srcset="./assets/flow-spacer.svg" /><img align="right" width="38%" src="./assets/flow-mewcode.svg" alt="Alert to sandboxed repair to pull request, followed by human review" /></picture><img src="./assets/mewcode.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/MewCode">MewCode</a></h3>
 <p><strong>From production alerts to reviewable repair PRs</strong><br/>
-Investigate, fix and verify in isolated worktrees and Docker sandboxes, then hand the PR to a human.</p>
-<p>Bounded retries · Read-only MCP · Notification Outbox · Independent review<br/>
-<sub>Python / Textual / Docker / SQLite</sub></p>
-<p><a href="https://github.com/pretextQ/MewCode">Repository</a> · <a href="https://github.com/pretextQ/mewcode-alert-demo/pull/5">Real repair PR</a><br/>
-<sub>v0.3.0 · Shared Agent core for CLI / TUI and alert services; no merge permissions</sub></p>
+Fix and verify in a sandbox; hand the PR to a human. No merge permissions.<br/>
+<sub>v0.3.0 · Python / Textual / Docker / SQLite</sub><br/>
+<a href="https://github.com/pretextQ/MewCode">Repository</a> · <a href="https://github.com/pretextQ/mewcode-alert-demo/pull/5">Real repair PR</a></p>
 </td></tr>
 </table>
 
 <table width="100%">
 <tr><td width="9999">
-<h3><img src="./assets/reminder.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/Reminder">Reminder</a></h3>
+<h3><picture><source media="(max-width: 600px)" srcset="./assets/flow-spacer.svg" /><img align="right" width="38%" src="./assets/flow-reminder.svg" alt="Sources to governed memory to retrieval, grounding answers in citations" /></picture><img src="./assets/reminder.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/Reminder">Reminder</a></h3>
 <p><strong>Long-term memory with sources and governance</strong><br/>
-Turn notes, documents and experiences into searchable, traceable personal memory for the Mneme knowledge workspace.</p>
-<p>Hybrid retrieval · Memory governance · Citation checks · Recoverable runs<br/>
-<sub>Python / FastAPI / Vue / pgvector / BGE-M3</sub></p>
-<p><a href="https://github.com/pretextQ/Reminder">Repository</a> · <a href="https://github.com/pretextQ/Reminder/blob/master/docs/architecture.md">Architecture &amp; boundaries</a><br/>
-<sub>v0.1.0 · Online answers routed through the Reminder API</sub></p>
+Searchable, traceable personal memory for the Mneme knowledge workspace.<br/>
+<sub>v0.1.0 · Python / FastAPI / Vue / pgvector / BGE-M3</sub><br/>
+<a href="https://github.com/pretextQ/Reminder">Repository</a> · <a href="https://github.com/pretextQ/Reminder/blob/master/docs/architecture.md">Architecture &amp; boundaries</a></p>
 </td></tr>
 </table>
 

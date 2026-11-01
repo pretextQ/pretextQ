@@ -8,37 +8,31 @@
 
 <table width="100%">
 <tr><td width="9999">
-<h3><img src="./assets/eyes.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/eyes">eyes</a></h3>
+<h3><picture><source media="(max-width: 600px)" srcset="./assets/flow-spacer.svg" /><img align="right" width="38%" src="./assets/flow-eyes.svg" alt="测试集到 Agent 执行与评分，再关联证据和回归报告" /></picture><img src="./assets/eyes.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/eyes">eyes</a></h3>
 <p><strong>Agent 评测与执行观测</strong><br/>
-用自定义测试集、评分规则和执行证据，判断 Agent 修改是否有效。</p>
-<p>版本化实验 · 独立评分 · 执行轨迹 · 回归对比<br/>
-<sub>Python / FastAPI / React / PostgreSQL</sub></p>
-<p><a href="https://github.com/pretextQ/eyes">仓库</a> · <a href="https://github.com/pretextQ/eyes#两条使用路径">接入与使用</a><br/>
-<sub>v0.1.0 · 单团队自托管，按需使用与维护</sub></p>
+自托管评测与观测，让 Agent 修改有评分、有证据。<br/>
+<sub>v0.1.0 · Python / FastAPI / React / PostgreSQL</sub><br/>
+<a href="https://github.com/pretextQ/eyes">仓库</a> · <a href="https://github.com/pretextQ/eyes#两条使用路径">接入与使用</a></p>
 </td></tr>
 </table>
 
 <table width="100%">
 <tr><td width="9999">
-<h3><img src="./assets/mewcode.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/MewCode">MewCode</a></h3>
+<h3><picture><source media="(max-width: 600px)" srcset="./assets/flow-spacer.svg" /><img align="right" width="38%" src="./assets/flow-mewcode.svg" alt="告警到沙箱修复，再生成 PR 并交给人工审查" /></picture><img src="./assets/mewcode.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/MewCode">MewCode</a></h3>
 <p><strong>从线上告警到可审查的修复 PR</strong><br/>
-在独立 worktree 与 Docker 沙箱中定位、修复和验证，再交给人工审查。</p>
-<p>有界重试 · 只读 MCP · 通知 Outbox · 独立审查<br/>
-<sub>Python / Textual / Docker / SQLite</sub></p>
-<p><a href="https://github.com/pretextQ/MewCode">仓库</a> · <a href="https://github.com/pretextQ/mewcode-alert-demo/pull/5">真实修复 PR</a><br/>
-<sub>v0.3.0 · CLI / TUI 与告警服务共用 Agent 内核；服务无合并权限</sub></p>
+在沙箱中修复、验证，以 PR 交给人工；服务无合并权限。<br/>
+<sub>v0.3.0 · Python / Textual / Docker / SQLite</sub><br/>
+<a href="https://github.com/pretextQ/MewCode">仓库</a> · <a href="https://github.com/pretextQ/mewcode-alert-demo/pull/5">真实修复 PR</a></p>
 </td></tr>
 </table>
 
 <table width="100%">
 <tr><td width="9999">
-<h3><img src="./assets/reminder.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/Reminder">Reminder</a></h3>
+<h3><picture><source media="(max-width: 600px)" srcset="./assets/flow-spacer.svg" /><img align="right" width="38%" src="./assets/flow-reminder.svg" alt="来源到受治理的记忆与检索，再生成有引用的回答" /></picture><img src="./assets/reminder.svg" width="24" height="24" alt="" /> <a href="https://github.com/pretextQ/Reminder">Reminder</a></h3>
 <p><strong>有来源、可治理的长期记忆</strong><br/>
-将笔记、文档与经历沉淀为可检索、可追溯的个人记忆，为 Mneme 知识工作台提供 Agent 能力。</p>
-<p>混合检索 · 记忆治理 · 引用验证 · 可恢复执行<br/>
-<sub>Python / FastAPI / Vue / pgvector / BGE-M3</sub></p>
-<p><a href="https://github.com/pretextQ/Reminder">仓库</a> · <a href="https://github.com/pretextQ/Reminder/blob/master/docs/architecture.md">架构与边界</a><br/>
-<sub>v0.1.0 · 在线回答统一经过 Reminder API</sub></p>
+为 Mneme 知识工作台提供可检索、可追溯的个人记忆。<br/>
+<sub>v0.1.0 · Python / FastAPI / Vue / pgvector / BGE-M3</sub><br/>
+<a href="https://github.com/pretextQ/Reminder">仓库</a> · <a href="https://github.com/pretextQ/Reminder/blob/master/docs/architecture.md">架构与边界</a></p>
 </td></tr>
 </table>
 

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="176" viewBox="0 0 360 176" role="img" aria-labelledby="title">
+  <title id="title">Dataset to Agent to scoring, linked to evidence and regression reports</title>
+  <style>:root{--ink:#0d9488}@media(prefers-color-scheme:dark){:root{--ink:#5eead4}}</style>
+  <defs><marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="m0 0 6 3-6 3" fill="none" stroke="var(--ink)" stroke-width="1.2"/></marker></defs>
+  <g fill="none" stroke="var(--ink)" stroke-width="1.5">
+    <path d="M104 72h22" marker-end="url(#arrow)"/>
+    <path d="M224 72h22" marker-end="url(#arrow)"/>
+    <path d="M300 94v30H180v10" marker-end="url(#arrow)"/>
+    <rect x="16" y="50" width="88" height="44" rx="10" fill="#14b8a6" fill-opacity=".08"/>
+    <rect x="136" y="50" width="88" height="44" rx="10" fill="#14b8a6" fill-opacity=".08"/>
+    <rect x="256" y="50" width="88" height="44" rx="10" fill="#14b8a6" fill-opacity=".08"/>
+  </g>
+  <g fill="var(--ink)" font-family="Segoe UI,Arial,sans-serif" text-anchor="middle">
+    <text x="180" y="25" font-size="11" font-weight="600" letter-spacing="2">EVALUATE WITH EVIDENCE</text>
+    <g font-size="13" font-weight="600"><text x="60" y="77">DATASET</text><text x="180" y="77">AGENT</text><text x="300" y="77">SCORE</text></g>
+    <text x="180" y="155" font-size="12" font-weight="600" letter-spacing=".5">EVIDENCE + REGRESSION</text>
+  </g>
+</svg>
