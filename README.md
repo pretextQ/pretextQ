@@ -12,10 +12,10 @@
 
 <h1 align="center">你好，我是 pretextQ 👋</h1>
 
-<h3 align="center">构建可控、可观测、可验证的 Agent 系统。</h3>
+<h3 align="center">我构建的不是“会跑的 Demo”，而是权限可控、结果可验证、能落进企业生产环境的系统。</h3>
 
 <p align="center">
-  Agent 评测 · 自动化开发 · 长期记忆 · 工程化交付
+  Agent 评估与执行观测 · Coding Agent 与告警自动化 · 长期记忆与知识工作台 · DevOps 工程化
 </p>
 
 <p align="center">

@@ -12,10 +12,10 @@
 
 <h1 align="center">Hi, I'm pretextQ 👋</h1>
 
-<h3 align="center">Building controllable, observable and verifiable Agent systems.</h3>
+<h3 align="center">I don't build chat demos — I build permission-controlled, verifiable systems that ship to enterprise production.</h3>
 
 <p align="center">
-  Agent Evaluation · Automated Development · Long-term Memory · Engineering &amp; Delivery
+  Agent Evaluation & Observation · Coding Agent & Alert Automation · Long-term Memory & Knowledge Workspace · DevOps Engineering
 </p>
 
 <p align="center">
