@@ -135,10 +135,12 @@ PR + CI 门禁 ─▶ 人工 review（唯一上线门禁）
 - **内部工具链只读**：内置生产日志（Loki）与 CI 状态（GitHub）两个 MCP server，整条取数路径只有 GET；未声明 readOnlyHint 的工具在服务模式一律不挂。
 - **自起测试环境**：仓库带 docker-compose.yml 时自动起依赖，在沙箱内跑集成测试；无容器运行时则如实记录“未执行”，不用假验证充数。
 - **运营可量化**：/metrics（Prometheus）、单 job JSON 复盘、按仓库 token 成本；评估集回放让每次提示词/内核改动都有成功率、MTTR 与成本的前后对比。
-- **多仓库策略**：`.mewcode/policy.yaml` 声明触发路由、目标分支、token 预算与通知渠道，按 job 现读、改文件即生效，损坏的策略快速失败而非静默回退。
+- **可靠交接与策略恢复**：关键通知与任务状态同事务写入 Outbox，后台重试及重启补发不重跑 Agent；`.mewcode/policy.yaml` 的脱敏生效快照在执行与发布前重验证，分支变化升级人工、预算取更严格值。每次派工记录起因、状态和已落库 token，见[服务可靠性](https://github.com/pretextQ/MewCode/blob/master/guides/service-reliability.md)。当前为单进程 SQLite，通知不保证恰好一次。
 - **交互式内核同样完整**：工具集 + 权限分层管线（deny 优先于白名单）+ Skill 与 MCP 扩展，Windows 是一等公民平台。
 - **人工审查闭环**：鉴权决策接口记录合并、要求修改或升级；修改意见重新入队，等待审查且已有 PR 的任务继续合并重复告警，服务不执行远端合并。
-- **v0.3.0 维护验证**：10 月 24 日修复覆盖权限、恢复、上下文、资源清理与 CI 门禁；记录中的 pytest 为 1363 passed / 18 skipped，Windows/Linux 四组 CI 通过。本轮真实 Docker 隔离与模型运行未执行，见[维护交接](https://github.com/pretextQ/MewCode/blob/master/guides/maintenance.md)。
+- **独立修复审查**：默认关闭、只提供意见；固定提交上的完整 diff 留存为证据，模型输入另受预算约束，逐文件记录覆盖与省略原因，发布绑定受审 SHA。真实基线/候选各五例对比未证明质量提升，见[独立审查指南](https://github.com/pretextQ/MewCode/blob/master/guides/independent-review.md)。
+- **有界监督与失败反馈**：默认关闭的监督内核已接入执行循环预算预警；连续两次完整 pytest 失败证据相同时，仅向原预算允许的下一次修复追加重新诊断建议。未知格式、可能 TDD、环境与超时单独处理，不增加请求或提前终止，见[监督指南](https://github.com/pretextQ/MewCode/blob/master/guides/supervision.md)。
+- **v0.3.0 最新验收记录**：11 月 1 日全量 pytest 为 1579 passed / 19 skipped，新增失败反馈专项 48 passed，独立 Docker 专项 16 passed；Ruff、Windows/Linux 目标 mypy、工程守卫、四项旧缺陷回植、锁文件与构建通过。该轮使用模型替身，未创建远端修复 PR、未部署生产；行为验证不等于生产收益，见[本轮验收](https://github.com/pretextQ/MewCode/blob/master/docs/stage-2026-11-01-dead-end.md)。
 - **服务边界持续加固**：运维与任务端点鉴权、告警原子去重、取消时进程树与容器清理、按 job 隔离测试环境，以及跨重试累计 token 预算。细粒度 egress 白名单仍需宿主网络层配置，见[信任模型](https://github.com/pretextQ/MewCode#信任模型无人值守为什么可信)。
 
 ### 这个项目真正要解决的问题
@@ -210,11 +212,11 @@ Reminder API → BGE-M3 + PostgreSQL / pgvector
 
 ## 最近在做的事
 
-状态核对：2026-10-25，依据三个项目的默认分支、README 与专项验证记录。
+状态核对：2026-11-01（Asia/Shanghai），依据三个项目的默认分支、README 与专项验证记录。核对基线：eyes `c94d500`、MewCode `cc98162`、Reminder `9f1d5e8`。
 
 - eyes：完成安全与资源边界修复；下一步按[设计优化待办](https://github.com/pretextQ/eyes/blob/main/docs/TODO.md)核对状态表达、双路径引导、审阅工作区和流程图体验，计划不计为已实现
-- MewCode：v0.3.0 完成审查修复与依赖维护；[独立修复审查、diff 覆盖记录和 GitHub 评审反馈](https://github.com/pretextQ/MewCode/blob/master/docs/evolution/05-pr-review-improvements.md)仍为待实施计划
-- Reminder：推进混合检索分数融合、BGE-M3 sparse 检索与飞书 / Confluence 只读 MCP 接入
+- MewCode：已交付独立修复审查、监督内核与循环预算预警、通知 Outbox、策略恢复重验证和 dead-end 失败反馈；审查与监督默认关闭，self-verify、GitHub 评论/评审接入、observe 与 PR 发布持久化队列仍待实施，见[当前状态与后续入口](https://github.com/pretextQ/MewCode/blob/master/docs/README.md)
+- Reminder：保留混合检索分数融合、可选 BGE-M3 sparse 检索与飞书 / Confluence 只读 MCP 接入；默认分支最新提交仍为 10 月 10 日，本次未发现新增交付
 
 ---
 
