@@ -12,10 +12,10 @@
 
 <h1 align="center">你好，我是 pretextQ 👋</h1>
 
-<h3 align="center">我建構的不是「會跑的 Demo」，而是權限可控、結果可驗證、能落進企業生產環境的系統。</h3>
+<h3 align="center">建構可控、可觀測、可驗證的 Agent 系統。</h3>
 
 <p align="center">
-  Agent 評估與執行觀測 · Coding Agent 與告警自動化 · 長期記憶與知識工作台 · DevOps 工程化
+  Agent 評測 · 自動化開發 · 長期記憶 · 工程化交付
 </p>
 
 <p align="center">
