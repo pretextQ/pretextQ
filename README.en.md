@@ -99,13 +99,11 @@ Web / CLI / API ── regression reports · CI gates
 
 ### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
-> One agent core, two shapes: an interactive CLI/TUI that writes code with you, and a headless service that stays resident on production alerts — the agent locates, fixes and verifies inside an OS-level sandbox, then hands the result back as a PR. Human PR review is the only mandatory gate; the service holds no merge permission.
+> One Agent core for an interactive CLI/TUI and an alert-driven service: investigate, fix and verify in a sandbox, then hand the PR to a human.
 
 | Form | Focus | Trust boundary | Links |
 |---|---|---|---|
 | AI Coding Agent + alert-driven dev service | Alert → fix PR · OS-level sandbox · bounded retries | Human review is the only gate · no merge permission | [Repository](https://github.com/pretextQ/MewCode) |
-
-MewCode automates the on-call chain "alert arrives → locate → fix → verify → submit for review": Alertmanager webhooks trigger jobs, every job runs in its own sandbox and git worktree, and the PR body carries a structured evidence chain — alert summary, root cause, before/after test comparison, integration verification — so reviewers can judge without reading agent logs. The October 5, 2026 replay completed all six jobs across three demo bugs and two rounds unattended, with a 25–26s median alert→PR per round. This is a small-sample replay result, not a production success-rate guarantee.
 
 ### The unattended path from alert to PR
 
@@ -123,23 +121,13 @@ Verification ── regression tests + self-started docker-compose integration t
 PR + CI gate ─▶ human review (the only release gate)
 ```
 
-- **Alerts in, PRs out**: the demo repo keeps the real PRs from past unattended runs, each one a complete evidence chain — start from [PR #5](https://github.com/pretextQ/mewcode-alert-demo/pull/5).
-- **Honest escalation**: retries are bounded; on limit the job escalates with the analysis it already produced. A fix that fails verification is never published — no garbage PRs.
-- **OS-level sandbox**: the agent runs inside a container — non-root, all capabilities dropped, read-only root filesystem, CPU/memory/PID limits, hard-timeout kill; host config and secrets never enter the container.
-- **Read-only internal toolchain**: two built-in MCP servers — production logs (Loki) and CI status (GitHub) — with GET-only data paths; tools without `readOnlyHint` are never mounted in service mode.
-- **Self-started test environments**: when the repo ships a docker-compose.yml, the service brings up dependencies and runs integration tests inside the sandbox; with no container runtime it honestly records "not executed" instead of faking verification.
-- **Measurable operations**: /metrics (Prometheus), per-job JSON retrospectives, per-repo token costs; evaluation-set replay gives success-rate, MTTR and cost before/after numbers for every prompt or core change.
-- **Reliable handoff and policy recovery**: key notifications enter an Outbox in the same transaction as job state; background retries and restart delivery do not rerun the agent. Sanitized `.mewcode/policy.yaml` snapshots are revalidated before execution and publication; branch changes escalate to a human and budgets use the stricter limit. Each dispatch records its cause, state and persisted token usage; see [service reliability](https://github.com/pretextQ/MewCode/blob/master/guides/service-reliability.md). The current design uses a single SQLite service process; notifications do not guarantee exactly-once delivery.
-- **The interactive kernel is complete too**: tool set + permission pipeline (deny overrides allowlist) + skills and MCP extensions; Windows is a first-class platform.
-- **Human review loop**: an authenticated decision API records merged, changes-requested or escalated outcomes; change requests requeue the job, and pending reviews with an existing PR keep deduplicating alerts. The service does not merge remotely.
-- **Independent fix review**: disabled by default and advisory only. A complete diff from fixed commits is retained as evidence, while model input has a separate budget and per-file coverage records with omission reasons; publication is bound to the reviewed SHA. A real baseline/candidate comparison of five cases each did not demonstrate better quality; see the [review guide](https://github.com/pretextQ/MewCode/blob/master/guides/independent-review.md).
-- **Bounded supervision and failure feedback**: the supervision kernel, disabled by default, now supports iteration-budget warnings. Two consecutive identical, complete pytest failure records add a diagnostic suggestion only to the next repair attempt allowed by the existing budget. Unknown formats, possible TDD, environment failures and timeouts are handled separately, without extra requests or early termination; see the [supervision guide](https://github.com/pretextQ/MewCode/blob/master/guides/supervision.md).
-- **Latest v0.3.0 verification record**: November 1 reports 1579 pytest passes / 19 skips, 48 failure-feedback checks and a separate 16-pass Docker suite. Ruff, Windows/Linux mypy targets, engineering guards, four restored-defect checks, lockfile validation and builds passed. This round used model substitutes, created no remote repair PR and made no production deployment; behavioral verification does not establish production benefit. See the [acceptance record](https://github.com/pretextQ/MewCode/blob/master/docs/stage-2026-11-01-dead-end.md).
-- **Service hardening**: authenticated operational and job endpoints, atomic alert deduplication, process-tree and container cleanup on cancellation, per-job test isolation and cumulative token budgets across retries. Fine-grained egress rules still require host network configuration; see the [trust model](https://github.com/pretextQ/MewCode#信任模型无人值守为什么可信).
+- **Isolation and permissions**: independent worktrees, Docker sandboxes and read-only MCP tools enforce resource and permission boundaries.
+- **Bounded repairs**: investigation, fixes, regression and integration tests form one workflow; exhausted retries escalate to a human, with root-cause and test evidence in the PR.
+- **Reliable operations**: alert deduplication, restart recovery, notification Outbox and policy revalidation, with metrics and token usage for job reports.
+- **Extensions and review**: Skill/MCP support and Windows compatibility; independent review and supervision are off by default, providing advice and feedback within existing budgets.
+- **Evidence and limits**: [real demo PRs](https://github.com/pretextQ/mewcode-alert-demo/pull/5) and [verification records](https://github.com/pretextQ/MewCode/blob/master/docs/stage-2026-11-01-dead-end.md) are available. Production benefits remain unproven; fine-grained egress restrictions require host configuration.
 
-### The questions I care about in this project
-
-The hard part of unattended coding is not fixing fast — it is what makes it trustworthy: how permissions are constrained, how behavior is isolated, how evidence is recorded, and how a broken fix is guaranteed never to ship. MewCode treats trust as the design starting point — in headless mode, actions that "would need to ask a human" are denied, not waved through; the PR is the only exit, the human is the only gate.
+Details: [Service reliability](https://github.com/pretextQ/MewCode/blob/master/guides/service-reliability.md) · [Independent review](https://github.com/pretextQ/MewCode/blob/master/guides/independent-review.md) · [Supervision](https://github.com/pretextQ/MewCode/blob/master/guides/supervision.md)
 
 **Core Stack**
 

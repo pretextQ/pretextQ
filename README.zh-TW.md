@@ -99,13 +99,11 @@ Web / CLI / API ── 迴歸報告 · CI 品質門檻
 
 ### [An AI Coding Agent that turns alerts into reviewed PRs](https://github.com/pretextQ/MewCode)
 
-> 同一個 agent 核心，兩種形態：互動式 CLI/TUI 幫你寫程式碼；無頭服務常駐接線上告警——agent 在 OS 級沙箱裡定位、修復、驗證，以 PR 交給人工 review。人審 PR 是唯一必經的人工節點，服務沒有任何 merge 權限。
+> 互動式 CLI/TUI 與告警驅動服務共用 Agent 核心，在沙箱中完成定位、修復和驗證，以 PR 交給人工審查。
 
 | 專案形態 | 核心定位 | 信任邊界 | Links |
 |---|---|---|---|
 | AI Coding Agent + 告警驅動的自動化開發服務 | 告警 → 修復 PR · OS 級沙箱 · 有界重試 | 人審 PR 唯一關卡 · 服務無 merge 權限 | [Repository](https://github.com/pretextQ/MewCode) |
-
-MewCode 把「收到告警 → 定位 → 修復 → 驗證 → 提交 review」這條值班鏈路自動化：Alertmanager webhook 觸發，每個 job 在獨立沙箱與 git worktree 中執行，PR body 自帶結構化證據鏈——告警摘要、根因、測試前後對比、整合驗證——審查者不看 agent 日誌也能做判斷。2026-10-05 的三類 demo bug、前後兩輪共 6 單全部無人值守跑通，每輪告警→PR 中位數 25–26 秒；這是小樣本重放結果，非生產成功率承諾。
 
 ### 從告警到 PR 的無人值守鏈路
 
@@ -123,23 +121,13 @@ Agent 核心 ── 定位 · 修復 · 有界重試（超限 escalate）
 PR + CI 關卡 ─▶ 人工 review（唯一上線關卡）
 ```
 
-- **告警進來，PR 出去**：demo 儲存庫保留歷次無人值守執行的真實 PR，每份都是完整證據鏈，可從 [PR #5](https://github.com/pretextQ/mewcode-alert-demo/pull/5) 看起。
-- **修不好就誠實升級**：重試有上限，超限進入 escalate 並附上已嘗試的分析；驗證不過的修復不會被發布，絕不產生垃圾 PR。
-- **OS 級沙箱**：agent 在容器內執行——非 root、全部能力丟棄、唯讀根檔案系統、CPU/記憶體/PID 限制、硬逾時強制終止，宿主設定與金鑰不進容器。
-- **內部工具鏈唯讀**：內建生產日誌（Loki）與 CI 狀態（GitHub）兩個 MCP server，讀取路徑只有 GET；未聲明 readOnlyHint 的工具在服務模式一律不掛。
-- **自起測試環境**：儲存庫帶 docker-compose.yml 時自動啟動依賴，在沙箱內跑整合測試；無容器執行環境則如實記錄「未執行」，不用假驗證充數。
-- **營運可量化**：/metrics（Prometheus）、單 job JSON 複盤、按儲存庫 token 成本；評估集回放讓每次提示詞/核心改動都有成功率、MTTR 與成本的前後對比。
-- **可靠交接與策略恢復**：關鍵通知與任務狀態在同一交易寫入 Outbox，背景重試及重啟補發不重跑 Agent；`.mewcode/policy.yaml` 的去敏生效快照在執行與發布前重新驗證，分支變更升級人工、預算取更嚴格值。每次派工記錄起因、狀態和已落庫 token，見[服務可靠性](https://github.com/pretextQ/MewCode/blob/master/guides/service-reliability.md)。目前為單程序 SQLite，通知不保證恰好一次。
-- **互動式核心同樣完整**：工具集 + 權限分層管線（deny 優先於白名單）+ Skill 與 MCP 擴充，Windows 是一等公民平台。
-- **人工審查閉環**：經身分驗證的決策介面記錄合併、要求修改或升級；修改意見重新入列，等待審查且已有 PR 的任務繼續合併重複告警，服務不執行遠端合併。
-- **獨立修復審查**：預設關閉、僅提供意見；固定提交上的完整 diff 保留為證據，模型輸入另受預算約束，逐檔案記錄涵蓋與省略原因，發布綁定受審 SHA。真實基線/候選各五例比較未證明品質提升，見[獨立審查指南](https://github.com/pretextQ/MewCode/blob/master/guides/independent-review.md)。
-- **有界監督與失敗回饋**：預設關閉的監督核心已接入執行循環預算預警；連續兩次完整 pytest 失敗證據相同時，僅向原預算允許的下一次修復追加重新診斷建議。未知格式、可能 TDD、環境與逾時分別處理，不增加請求或提前終止，見[監督指南](https://github.com/pretextQ/MewCode/blob/master/guides/supervision.md)。
-- **v0.3.0 最新驗收紀錄**：11 月 1 日全量 pytest 為 1579 passed / 19 skipped，新增失敗回饋專項 48 passed，獨立 Docker 專項 16 passed；Ruff、Windows/Linux 目標 mypy、工程守衛、四項舊缺陷回植、鎖定檔與建置通過。該輪使用模型替身，未建立遠端修復 PR、未部署生產；行為驗證不等於生產收益，見[本輪驗收](https://github.com/pretextQ/MewCode/blob/master/docs/stage-2026-11-01-dead-end.md)。
-- **服務邊界持續強化**：維運與任務端點驗證身分、告警原子去重、取消時清理程序樹與容器、按 job 隔離測試環境，以及跨重試累計 token 預算。細粒度 egress 白名單仍需宿主網路層設定，見[信任模型](https://github.com/pretextQ/MewCode#信任模型无人值守为什么可信)。
+- **隔離與權限**：獨立 worktree 與 Docker 沙箱、唯讀 MCP 工具鏈，執行受資源和權限邊界約束。
+- **有界修復**：自動串聯定位、修復、迴歸與整合測試；重試超限升級人工，PR 附根因和測試證據。
+- **可靠執行**：告警去重、重啟恢復、通知 Outbox 與策略重新驗證，結合指標和 token 用量支援任務複盤。
+- **擴充與審查**：支援 Skill/MCP 與 Windows；獨立審查和監督預設關閉，僅提供意見與預算內回饋。
+- **驗證與邊界**：已有[真實示範 PR](https://github.com/pretextQ/mewcode-alert-demo/pull/5)和[驗收紀錄](https://github.com/pretextQ/MewCode/blob/master/docs/stage-2026-11-01-dead-end.md)；尚無生產收益結論，細粒度對外連線限制仍需宿主設定。
 
-### 這個專案真正要解決的問題
-
-無人值守寫程式碼最難的不是「修得快」，而是「憑什麼信」：權限怎麼收斂、行為怎麼隔離、證據怎麼沉澱、改壞了怎麼保證不上線。MewCode 把信任當成設計起點——headless 模式下「要問人」的動作一律拒絕而非放行，PR 是唯一出口，人是唯一關卡。
+詳細說明：[服務可靠性](https://github.com/pretextQ/MewCode/blob/master/guides/service-reliability.md) · [獨立審查](https://github.com/pretextQ/MewCode/blob/master/guides/independent-review.md) · [監督指南](https://github.com/pretextQ/MewCode/blob/master/guides/supervision.md)
 
 **Core Stack**
 
